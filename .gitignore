@@ -1,4 +1,5 @@
-UnityClient/Temp/
-UnityClient/obj/
-UnityClient/Library/ShaderCache/
-UnityClient/.vs/
+/UnityClient/Temp/
+/UnityClient/obj/
+/UnityClient/Library/ShaderCache/
+/UnityClient/.vs/
+/UnityClient/Library/*.log
