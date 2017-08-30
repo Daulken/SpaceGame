@@ -1,0 +1,74 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Helpers\Runtime\UnityExtensions.cs">
+    <Files>
+      <File FileName="Assets\Localization\Runtime\Localization.cs" Line="212" Column="33" />
+      <File FileName="Assets\iTween\Runtime\iTween.cs" Line="43" Column="3" />
+      <File FileName="Assets\Helpers\Runtime\HelperFunctions.cs" Line="1" Column="3" />
+      <File FileName="Assets\Actions\Runtime\System\BaseAction.cs" Line="109" Column="149" />
+      <File FileName="Assets\Helpers\Runtime\UnityExtensions.cs" Line="641" Column="1" />
+      <File FileName="Assets\whydoidoit.com\Runtime\Serialization\prewarm.cs" Line="4" Column="38" />
+      <File FileName="Assets\whydoidoit.com\Runtime\Serialization\UnitySerializer.cs" Line="1007" Column="55" />
+      <File FileName="Assets\whydoidoit.com\Runtime\Serialization\SerializationUnits.cs" Line="71" Column="51" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Assembly-CSharp" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Actions" expanded="True">
+                <Node name="Runtime" expanded="True">
+                  <Node name="Actions" expanded="True">
+                    <Node name="iTween" expanded="True" />
+                  </Node>
+                </Node>
+              </Node>
+              <Node name="Helpers" expanded="True">
+                <Node name="Runtime" expanded="True">
+                  <Node name="UnityExtensions.cs" selected="True" />
+                </Node>
+              </Node>
+              <Node name="iTween" expanded="True">
+                <Node name="Runtime" expanded="True" />
+              </Node>
+              <Node name="Localization" expanded="True">
+                <Node name="Runtime" expanded="True" />
+              </Node>
+              <Node name="whydoidoit.com" expanded="True">
+                <Node name="Runtime" expanded="True">
+                  <Node name="Radical" expanded="True" />
+                  <Node name="Serialization" expanded="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+          <Node name="Assembly-CSharp-Editor" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Actions" expanded="True">
+                <Node name="Editor" expanded="True">
+                  <Node name="Actions" expanded="True">
+                    <Node name="iTween" expanded="True" />
+                  </Node>
+                  <Node name="System" expanded="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>game.m_whenCompleted</Value>
+          <Value>m_exportStartDate</Value>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
