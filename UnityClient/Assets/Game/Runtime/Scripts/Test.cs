@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Localization;
 using OpenSimplexNoise;
 
 
@@ -28,6 +27,8 @@ public class Test : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
+		DebugHelpers.Log("{0}={1}", m_stringID, Localization.Localize(m_stringID));
+
 		Dictionary<string, object> fields = new Dictionary<string, object>();
 		fields["num"] = 30;
 		fields["q"] = "test";
