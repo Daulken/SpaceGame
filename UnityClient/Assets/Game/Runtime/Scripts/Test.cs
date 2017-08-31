@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using OpenSimplexNoise;
+using Newtonsoft.Json;
 
 
 [AddComponentMenu("SPACEJAM/Test")]
@@ -24,23 +25,24 @@ public class Test : MonoBehaviour
 
 	//private OpenSimplexNoise.OpenSimplexNoise m_noise = new OpenSimplexNoise.OpenSimplexNoise();
 
+	private static string PasswordSalt = "testSalt";
+
 	// Use this for initialization
 	void Start()
 	{
 		DebugHelpers.Log("{0}={1}", m_stringID, Localization.Localize(m_stringID));
 
-		Dictionary<string, object> fields = new Dictionary<string, object>();
-		fields["num"] = 30;
-		fields["q"] = "test";
-		fields["oq"] = "test";
-		WebManager.PostJSONResponseJSON("/post.php?dump", fields, OnSearchResponse);
+		// Log in to secure server
+		Dictionary<string, string> parameters = new Dictionary<string, string>();
+		parameters["username"] = "Chris";
+		parameters["password"] = PasswordSalt + "password";
+		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.svc/Login", parameters, OnLoginResponse);
 
-		WebManager.AddHeader("X-RWPVT", "test_token");
-
-		WebManager.GetResponseJSON(string.Format("/post.php?dump"), OnSearchResponse);
+		WebManager.RequestResponseText(WebManager.RequestType.Get, "SpaceService.svc/GetPlayerList", "", OnSearchResponse);
+		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.svc/GetPlayerList", "", OnSearchResponse);
 	}
 
-	private void OnSearchResponse(WebManager.JsonWebResponse response)
+	private void OnLoginResponse(WebManager.TextWebResponse response)
 	{
 		if (response.IsValid())
 		{
@@ -48,7 +50,44 @@ public class Test : MonoBehaviour
 			string header = "";
 			foreach (string key in headers.Keys)
 				header += string.Format("Header: {0} = {1}\n", key, headers[key]);
-			DebugHelpers.Log("GET complete.\n{0}\nResponse: {1}", header, response.GetResponse());
+			DebugHelpers.Log("TextWebResponse.\n{0}\nResponse: {1}", header, response.GetResponse());
+
+			// Add authentication token for all other queries
+			WebManager.AddHeader("X-RWPVT", response.GetResponse());
+		}
+		else
+		{
+			// Log this error
+			DebugHelpers.LogError("POST error: {0} - {1}", response.GetErrorCode(), response.GetErrorDescription());
+		}
+	}
+
+	public class Player
+	{
+		public int PlayerId
+		{
+			get;
+			set;
+		}
+
+		public string PlayerName
+		{
+			get;
+			set;
+		}
+	}
+
+	private void OnSearchResponse(WebManager.TextWebResponse response)
+	{
+		if (response.IsValid())
+		{
+			Dictionary<string, string> headers = response.GetResponseHeaders();
+			string header = "";
+			foreach (string key in headers.Keys)
+				header += string.Format("Header: {0} = {1}\n", key, headers[key]);
+			DebugHelpers.Log("TextWebResponse.\n{0}\nResponse: {1}", header, response.GetResponse());
+
+			Player[] players = JsonConvert.DeserializeObject<Player[]>(response.GetResponse());
 		}
 		else
 		{

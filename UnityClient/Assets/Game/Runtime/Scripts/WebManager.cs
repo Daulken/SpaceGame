@@ -4,11 +4,19 @@ using System.Text;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
-using MiniJSON;
+using Newtonsoft.Json;
 
 
 public static class WebManager
 {
+	public enum RequestType
+	{
+		Get,
+		Post,
+		Put,
+		Delete,
+	};
+
 	// Generic communication response
 	public class WebResponse
 	{
@@ -79,117 +87,60 @@ public static class WebManager
 		}
 	}
 
-	// JSON specialised communication response
-	public class JsonWebResponse : WebResponse
+	// Text specialised communication response
+	public class TextWebResponse : WebResponse
 	{
-		private Dictionary<string, object> m_json;
-		private long m_responseError;
+		private string m_responseText;
 
-		public JsonWebResponse(long errorCode, string errorString)
+		public TextWebResponse(long errorCode, string errorString)
 			: base(errorCode, errorString)
 		{
-			m_json = new Dictionary<string, object>();
+			m_responseText = "";
 		}
 
-		public JsonWebResponse(Dictionary<string, string> responseHeaders, string responseText)
+		public TextWebResponse(Dictionary<string, string> responseHeaders, string responseText)
 			: base(responseHeaders)
 		{
-			// Parse the response as a JSON dictionary
-			Dictionary<string, object> json = Json.Deserialize(responseText) as Dictionary<string, object>;
-
-			// Set up an error if the JSON object could not be parsed
-			if (json == null)
-			{
-				m_responseError = 404;
-				m_errorString = "Response is not a JSON string";
-			}
-			// JSON could be parsed. Check if there is a valid result in it
-			else if (json.ContainsKey("error"))
-			{
-				m_responseError = (long)json["error"];
-				if (json.ContainsKey("errorstring"))
-					m_errorString = (string)json["errorstring"];
-			}
-			// No known error, but check if a result was given
-			else if (!m_json.ContainsKey("result"))
-			{
-				m_responseError = 404;
-				m_errorString = "Response JSON does not contain a result";
-			}
-			// Valid response
-			else
-			{
-				m_json = (Dictionary<string, object>)json["result"];
-			}
+			m_responseText = responseText;
 		}
 
-		// Query whether the response is valid, or had an error
-		public new bool IsValid()
+		// Get the response, if the response is valid
+		public string GetResponse()
 		{
-			return base.IsValid() && (m_responseError == 0);
-		}
-
-		// Get any error code, if the response isn't valid
-		public new long GetErrorCode()
-		{
-			if (m_responseError != 0)
-				return m_responseError;
-
-			return base.GetErrorCode();
-		}
-
-		// Get the JSON response, if the response is valid
-		public Dictionary<string, object> GetResponse()
-		{
-			return m_json;
+			return m_responseText;
 		}
 	}
 
 	// Register a common header to add to every request
 	public static void AddHeader(string header, string value)
 	{
-		WebCommunicator.GetInstance().AddHeader(header, value);
+		WebCommunicator.GetInstance().AddHeaderInternal(header, value);
 	}
 
 	// Unregister a common header from every request
 	public static void RemoveHeader(string header)
 	{
-		WebCommunicator.GetInstance().RemoveHeader(header);
+		WebCommunicator.GetInstance().RemoveHeaderInternal(header);
 	}
 
 	// Get the value of a registered common header added to every request
 	public static bool GetHeader(string header, out string value)
 	{
-		return WebCommunicator.GetInstance().GetHeader(header, out value);
+		return WebCommunicator.GetInstance().GetHeaderInternal(header, out value);
 	}
 
-	// Get a Binary response
-	public static void GetResponseBinary(string subAddress, Action<BinaryWebResponse> response)
+	// Make a request, and get a binary response
+	public static void RequestResponseBinary(RequestType requestType, string subAddress, object parameters, Action<BinaryWebResponse> response)
 	{
-		// Get the JSON response content in parallel
-		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().GetResponseBinaryInternal(subAddress, response));
+		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().RequestResponseBinaryInternal(requestType, subAddress, parameters, response));
 	}
 
-	// Get a JSON response
-	public static void GetResponseJSON(string subAddress, Action<JsonWebResponse> response)
+	// Make a request, and get a text response
+	public static void RequestResponseText(RequestType requestType, string subAddress, object parameters, Action<TextWebResponse> response)
 	{
-		// Get the JSON response content in parallel
-		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().GetResponseJSONInternal(subAddress, response));
+		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().RequestResponseTextInternal(requestType, subAddress, parameters, response));
 	}
 
-	// Post a JSON object, and get a binary response
-	public static void PostJSONResponseBinary(string subAddress, Dictionary<string, object> jsonContent, Action<BinaryWebResponse> response)
-	{
-		// Post the JSON message content in parallel
-		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().PostJSONResponseBinaryInternal(subAddress, jsonContent, response));
-	}
-
-	// Post a JSON object, and get a JSON response
-	public static void PostJSONResponseJSON(string subAddress, Dictionary<string, object> jsonContent, Action<JsonWebResponse> response)
-	{
-		// Post the JSON message content in parallel
-		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().PostJSONResponseJSONInternal(subAddress, jsonContent, response));
-	}
 }
 
 
@@ -197,8 +148,8 @@ public static class WebManager
 [AddComponentMenu("")]
 internal class WebCommunicator : MonoBehaviour
 {
-	private static string WebAddress = "http://www.posttestserver.com";
-	private static int TimeoutSeconds = 60;
+	private static string WebAddress = "http://localhost:63465/";
+	private static int TimeoutSeconds = 10;
 
 	private static WebCommunicator ms_instance = null;
 	private Dictionary<string, string> m_headers = new Dictionary<string, string>();
@@ -247,12 +198,12 @@ internal class WebCommunicator : MonoBehaviour
 			ms_instance = null;
 	}
 
-	// Ensures that there is an instance available to work with
-	private static void EnsureInstanceExists()
+	// Get an instance of the web communicator
+	public static WebCommunicator GetInstance()
 	{
 		// If an instance exists already, do nothing
 		if ((ms_instance != null) && (ms_instance.gameObject != null))
-			return;
+			return ms_instance;
 
 		// Look for an instance of this type in the scene already, in case a singleton was added
 		ms_instance = (WebCommunicator)GameObject.FindObjectOfType(typeof(WebCommunicator));
@@ -264,131 +215,109 @@ internal class WebCommunicator : MonoBehaviour
 			go.hideFlags = HideFlags.HideAndDontSave;
 			ms_instance = go.AddComponent<WebCommunicator>();
 		}
-	}
 
-	// Get the instance of the web communicator
-	public static WebCommunicator GetInstance()
-	{
-		EnsureInstanceExists();
 		return ms_instance;
 	}
 
-	public void AddHeader(string header, string value)
+	// Register a common header to add to every request
+	public void AddHeaderInternal(string header, string value)
 	{
 		m_headers.Add(header, value);
 	}
 
-	public void RemoveHeader(string header)
+	// Unregister a common header from every request
+	public void RemoveHeaderInternal(string header)
 	{
 		m_headers.Remove(header);
 	}
 
-	public bool GetHeader(string header, out string value)
+	// Get the value of a registered common header added to every request
+	public bool GetHeaderInternal(string header, out string value)
 	{
 		return m_headers.TryGetValue(header, out value);
 	}
 
-	public IEnumerator GetResponseBinaryInternal(string subAddress, Action<WebManager.BinaryWebResponse> response)
+	public IEnumerator RequestResponseBinaryInternal(WebManager.RequestType requestType, string subAddress, object parameters, Action<WebManager.BinaryWebResponse> response)
 	{
-		// Create a response downloader
-		DownloadHandler downloader = new DownloadHandlerBuffer();
+		// Encode the object into a JSON string
+		string jsonString = JsonConvert.SerializeObject(parameters);
+		byte[] rawBytes = Encoding.ASCII.GetBytes(jsonString);
 
-		// Post the JSON data to the web address
-		UnityWebRequest request = new UnityWebRequest(WebAddress + subAddress, UnityWebRequest.kHttpVerbGET, downloader, null);
-		request.redirectLimit = 0;
-		request.timeout = TimeoutSeconds;
+		// Get the verb type to request
+		string requestVerb = "";
+		switch (requestType)
+		{
+		case WebManager.RequestType.Get:
+			requestVerb = UnityWebRequest.kHttpVerbGET;
+			break;
+		case WebManager.RequestType.Post:
+			requestVerb = UnityWebRequest.kHttpVerbPOST;
+			break;
+		case WebManager.RequestType.Put:
+			requestVerb = UnityWebRequest.kHttpVerbPUT;
+			break;
+		case WebManager.RequestType.Delete:
+			requestVerb = UnityWebRequest.kHttpVerbDELETE;
+			break;
+		}
+
+		// Send the request
+		UnityWebRequest request = new UnityWebRequest(WebAddress + subAddress, requestVerb);
+		UploadHandlerRaw uploader = new UploadHandlerRaw(rawBytes);
+		uploader.contentType = "application/json"; //this is ignored?
+		request.uploadHandler = uploader;
 		foreach (string key in m_headers.Keys)
 			request.SetRequestHeader(key, m_headers[key]);
+		request.SetRequestHeader("Content-Type", "application/json");
+		request.timeout = TimeoutSeconds;
 		yield return request.Send();
-		while (!request.isDone)
-			yield return new WaitForEndOfFrame();
 
 		// If an error was found, return the error, otherwise return the result
 		if (request.isNetworkError || request.isHttpError)
 			response(new WebManager.BinaryWebResponse(request.responseCode, request.error));
 		else
-			response(new WebManager.BinaryWebResponse(request.GetResponseHeaders(), downloader.data));
+			response(new WebManager.BinaryWebResponse(request.GetResponseHeaders(), request.downloadHandler.data));
 	}
 
-	public IEnumerator GetResponseJSONInternal(string subAddress, Action<WebManager.JsonWebResponse> response)
+	public IEnumerator RequestResponseTextInternal(WebManager.RequestType requestType, string subAddress, object parameters, Action<WebManager.TextWebResponse> response)
 	{
-		// Create a response downloader
-		DownloadHandler downloader = new DownloadHandlerBuffer();
-
-		// Post the JSON data to the web address
-		UnityWebRequest request = new UnityWebRequest(WebAddress + subAddress, UnityWebRequest.kHttpVerbGET, downloader, null);
-		request.redirectLimit = 0;
-		request.timeout = TimeoutSeconds;
-		foreach (string key in m_headers.Keys)
-			request.SetRequestHeader(key, m_headers[key]);
-		yield return request.Send();
-		while (!request.isDone)
-			yield return new WaitForEndOfFrame();
-
-		// If an error was found, return the error, otherwise return the result
-		if (request.isNetworkError || request.isHttpError)
-			response(new WebManager.JsonWebResponse(request.responseCode, request.error));
-		else
-			response(new WebManager.JsonWebResponse(request.GetResponseHeaders(), downloader.text));
-	}
-
-	public IEnumerator PostJSONResponseBinaryInternal(string subAddress, Dictionary<string, object> jsonContent, Action<WebManager.BinaryWebResponse> response)
-	{
-		// Encode the JSON object into a string, and get the raw bytes
-		string jsonString = Json.Serialize(jsonContent);
+		// Encode the object into a JSON string
+		string jsonString = JsonConvert.SerializeObject(parameters);
 		byte[] rawBytes = Encoding.ASCII.GetBytes(jsonString);
 
-		// Create a JSON upload handler
-		UploadHandler uploader = new UploadHandlerRaw(rawBytes);
-		uploader.contentType = "application/json";
+		// Get the verb type to request
+		string requestVerb = "";
+		switch (requestType)
+		{
+		case WebManager.RequestType.Get:
+			requestVerb = UnityWebRequest.kHttpVerbGET;
+			break;
+		case WebManager.RequestType.Post:
+			requestVerb = UnityWebRequest.kHttpVerbPOST;
+			break;
+		case WebManager.RequestType.Put:
+			requestVerb = UnityWebRequest.kHttpVerbPUT;
+			break;
+		case WebManager.RequestType.Delete:
+			requestVerb = UnityWebRequest.kHttpVerbDELETE;
+			break;
+		}
 
-		// Create a response downloader
-		DownloadHandler downloader = new DownloadHandlerBuffer();
-
-		// Post the JSON data to the web address
-		UnityWebRequest request = new UnityWebRequest(WebAddress + subAddress, UnityWebRequest.kHttpVerbPOST, downloader, uploader);
-		request.redirectLimit = 0;
-		request.timeout = TimeoutSeconds;
+		// Send the request
+		UnityWebRequest request = new UnityWebRequest(WebAddress + subAddress, requestVerb);
+		UploadHandlerRaw uploader = new UploadHandlerRaw(rawBytes);
+		uploader.contentType = "application/json"; //this is ignored?
+		request.uploadHandler = uploader;
 		foreach (string key in m_headers.Keys)
 			request.SetRequestHeader(key, m_headers[key]);
+		request.SetRequestHeader("Content-Type", "application/json");
+		request.timeout = TimeoutSeconds;
 		yield return request.Send();
-		while (!request.isDone)
-			yield return new WaitForEndOfFrame();
 
 		// If an error was found, return the error, otherwise return the result
 		if (request.isNetworkError || request.isHttpError)
-			response(new WebManager.BinaryWebResponse(request.responseCode, request.error));
+			response(new WebManager.TextWebResponse(request.responseCode, request.error));
 		else
-			response(new WebManager.BinaryWebResponse(request.GetResponseHeaders(), downloader.data));
-	}
-
-	public IEnumerator PostJSONResponseJSONInternal(string subAddress, Dictionary<string, object> jsonContent, Action<WebManager.JsonWebResponse> response)
-	{
-		// Encode the JSON object into a string, and get the raw bytes
-		string jsonString = Json.Serialize(jsonContent);
-		byte[] rawBytes = Encoding.ASCII.GetBytes(jsonString);
-
-		// Create a JSON upload handler
-		UploadHandler uploader = new UploadHandlerRaw(rawBytes);
-		uploader.contentType = "application/json";
-
-		// Create a response downloader
-		DownloadHandler downloader = new DownloadHandlerBuffer();
-
-		// Post the JSON data to the web address
-		UnityWebRequest request = new UnityWebRequest(WebAddress + subAddress, UnityWebRequest.kHttpVerbPOST, downloader, uploader);
-		request.redirectLimit = 0;
-		request.timeout = TimeoutSeconds;
-		foreach (string key in m_headers.Keys)
-			request.SetRequestHeader(key, m_headers[key]);
-		yield return request.Send();
-		while (!request.isDone)
-			yield return new WaitForEndOfFrame();
-
-		// If an error was found, return the error, otherwise return the result
-		if (request.isNetworkError || request.isHttpError)
-			response(new WebManager.JsonWebResponse(request.responseCode, request.error));
-		else
-			response(new WebManager.JsonWebResponse(request.GetResponseHeaders(), downloader.text));
+			response(new WebManager.TextWebResponse(request.GetResponseHeaders(), request.downloadHandler.text));
 	}
 }
