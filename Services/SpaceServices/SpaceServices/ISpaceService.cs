@@ -13,7 +13,7 @@ namespace SpaceServices
     public interface ISpaceService
     {
         [OperationContract]
-        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Xml,
+        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "GetPlayerList/")]
         List<Player> GetPlayerList();
