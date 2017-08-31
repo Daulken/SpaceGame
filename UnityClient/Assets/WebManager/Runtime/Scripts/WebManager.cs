@@ -111,6 +111,7 @@ public static class WebManager
 		Game_PlayerNotFound = 10100,
 	};
 
+
 	// Generic communication response
 	public class WebResponse
 	{
@@ -119,9 +120,9 @@ public static class WebManager
 		protected Dictionary<string, string> m_responseHeaders;
 		protected bool m_valid = false;
 
-		public WebResponse(long errorCode, string errorString, string errorDetail)
+		public WebResponse(ErrorCode errorCode, string errorString, string errorDetail)
 		{
-			m_errorCode = (ErrorCode)errorCode;
+			m_errorCode = errorCode;
 			m_errorString = string.Format("{0}: {1}", errorString, errorDetail);
 			m_responseHeaders = new Dictionary<string, string>();
 		}
@@ -176,7 +177,7 @@ public static class WebManager
 	{
 		private byte[] m_responseData;
 
-		public BinaryWebResponse(long errorCode, string errorString, string errorDetail)
+		public BinaryWebResponse(ErrorCode errorCode, string errorString, string errorDetail)
 			: base(errorCode, errorString, errorDetail)
 		{
 			m_responseData = new byte[0];
@@ -233,7 +234,7 @@ public static class WebManager
 			}
 		}
 
-		public TextWebResponse(long errorCode, string errorString, string errorDetail)
+		public TextWebResponse(ErrorCode errorCode, string errorString, string errorDetail)
 			: base(errorCode, errorString, errorDetail)
 		{
 			m_responseText = "";
@@ -292,6 +293,21 @@ public static class WebManager
 		}
 	}
 
+	// Log in using given credentials
+	public static void LogIn(string username, string password, Action<WebResponse> response)
+	{
+		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().RequestLogInInternal(username, password, response));
+	}
+
+	// Query whether currently logged in
+	public static bool LoggedIn
+	{
+		get
+		{
+			return WebCommunicator.GetInstance().LoggedIn;
+		}
+	}
+
 	// Register a common header to add to every request
 	public static void AddHeader(string header, string value)
 	{
@@ -318,7 +334,7 @@ public static class WebManager
 				{
 					// If an error was found, return the error, otherwise return the result
 					if (request.isNetworkError || request.isHttpError)
-						response(new WebManager.BinaryWebResponse(request.responseCode, request.error, request.downloadHandler.text));
+						response(new WebManager.BinaryWebResponse((ErrorCode)request.responseCode, request.error, request.downloadHandler.text));
 					else
 						response(new WebManager.BinaryWebResponse(request.GetResponseHeaders(), request.downloadHandler.data));
 				}
@@ -333,7 +349,7 @@ public static class WebManager
 				{
 					// If an error was found, return the error, otherwise return the result
 					if (request.isNetworkError || request.isHttpError)
-						response(new WebManager.TextWebResponse(request.responseCode, request.error, request.downloadHandler.text));
+						response(new WebManager.TextWebResponse((ErrorCode)request.responseCode, request.error, request.downloadHandler.text));
 					else
 						response(new WebManager.TextWebResponse(request.GetResponseHeaders(), request.downloadHandler.text));
 				}
@@ -347,11 +363,33 @@ public static class WebManager
 [AddComponentMenu("")]
 internal class WebCommunicator : MonoBehaviour
 {
-	private const string WebAddress = "http://localhost:55271/";
-	private const int TimeoutSeconds = 10;
+	private const string WebAddress = "http://localhost:55271/";		// Server to connect to
+	private const int TimeoutSeconds = 10;								// Connection timeout
+	private const int GameVersion = 1;                                  // Current game data version
 
 	private static WebCommunicator ms_instance = null;
 	private Dictionary<string, string> m_headers = new Dictionary<string, string>();
+
+	private bool m_loggedIn = false;
+	public bool LoggedIn
+	{
+		get
+		{
+			return m_loggedIn;
+		}
+	}
+
+	private class LoginResponse
+	{
+		public string AuthToken
+		{
+			get; set;
+		}
+		public int Version
+		{
+			get; set;
+		}
+	};
 
 	// Awake is called at game startup, regardless of enable state
 	private void Awake()
@@ -436,6 +474,52 @@ internal class WebCommunicator : MonoBehaviour
 		return m_headers.TryGetValue(header, out value);
 	}
 
+	public IEnumerator RequestLogInInternal(string username, string password, Action<WebManager.WebResponse> response)
+	{
+		// Attempt to log in to secure server using the calculated password hash.
+		// A proper HTTPS connection should have been established for this, to prevent plain text password interception
+		Dictionary<string, string> formData = new Dictionary<string, string>() { { "username", username }, { "password", password } };
+		UnityWebRequest request = UnityWebRequest.Post(WebAddress + "SpaceService.asmx/Login", formData);
+		request.timeout = TimeoutSeconds;
+		yield return request.Send();
+
+		// If an error was found, return the error, otherwise return the result
+		if (request.isNetworkError || request.isHttpError)
+		{
+			// Give a response to anything that may want it
+			response(new WebManager.WebResponse((WebManager.ErrorCode)request.responseCode, request.error, request.downloadHandler.text));
+		}
+		// Query was valid
+		else
+		{
+			// Parse the response
+			WebManager.TextWebResponse internalResponse = new WebManager.TextWebResponse(request.GetResponseHeaders(), request.downloadHandler.text);
+
+			// Check response
+			LoginResponse loginData = JsonConvert.DeserializeObject<LoginResponse>(internalResponse.ResponseText);
+			if (loginData == null)
+			{
+				// Give a response to anything that may want it
+				response(new WebManager.WebResponse(WebManager.ErrorCode.Game_InvalidResponse, "Login Error", "No login response given"));
+			}
+			// Check version
+			else if (loginData.Version != GameVersion)
+			{
+				// Give a response to anything that may want it
+				response(new WebManager.WebResponse(WebManager.ErrorCode.Game_InvalidGameVersion, "Login Error", "Game client running incorrect version"));
+			}
+			else
+			{
+				// Add authentication token for all other queries
+				AddHeaderInternal("X-RWPVT", loginData.AuthToken);
+
+				// Set logged in
+				m_loggedIn = true;
+			}
+
+		}
+	}
+
 	public IEnumerator RequestResponseInternal(WebManager.RequestType requestType, string subAddress, Dictionary<string, string> formData, object jsonPutData, Action<UnityWebRequest> response)
 	{
 		UnityWebRequest request;
@@ -443,14 +527,7 @@ internal class WebCommunicator : MonoBehaviour
 		// Form data given. This is only compatible with POST
 		if ((formData != null) && (requestType == WebManager.RequestType.Post))
 		{
-			// Construct the form parameters
-			List<string> formParameters = new List<string>();
-			foreach (string key in formData.Keys)
-				formParameters.Add(string.Format("{0}={1}", key, formData[key]));
-
 			// Construct the post request
-			List<IMultipartFormSection> multipartForm = new List<IMultipartFormSection>();
-			multipartForm.Add(new MultipartFormDataSection(string.Join("&", formParameters.ToArray())));
 			request = UnityWebRequest.Post(WebAddress + subAddress, formData);
 		}
 		// No form data given

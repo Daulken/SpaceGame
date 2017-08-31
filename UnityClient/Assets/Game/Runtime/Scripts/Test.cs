@@ -30,20 +30,14 @@ public class Test : MonoBehaviour
 	{
 		//DebugHelpers.Log("{0}={1}", m_stringID, Localization.Localize(m_stringID));
 
-		// Log in to secure server
-		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/Login", new Dictionary<string, string>() { { "username", "Chris" }, { "password", "GVsdftghiovhiovgvhk" }, }, null,
-				(WebManager.TextWebResponse response) =>
+		WebManager.LogIn("chris", "flibble",
+				(WebManager.WebResponse response) =>
 				{
-					if (response.IsValid)
+					if (!response.IsValid)
 					{
-						// Add authentication token for all other queries
-						WebManager.AddHeader("X-RWPVT", response.ResponseText);
-						DebugHelpers.Log("AuthToken={0}", response.ResponseText);
-					}
-					else
-					{
-						// Log this error
-						DebugHelpers.LogError("POST error: {0} - {1}", response.ErrorCode, response.ErrorDescription);
+						// Log this error. Should be Game_InvalidCredentials if there wasn't an HTTP error
+						string localisedErrorDesc = Localization.Localize("WEBERROR_" + response.ErrorCode.ToString().ToUpper());
+						DebugHelpers.LogError("Login error: {0} ({1}) - {2}", response.ErrorCode, localisedErrorDesc, response.ErrorDescription);
 					}
 				}
 			);
@@ -60,11 +54,16 @@ public class Test : MonoBehaviour
 					else
 					{
 						// Log this error
-						DebugHelpers.LogError("POST error: {0} - {1}", response.ErrorCode, response.ErrorDescription);
+						string localisedErrorDesc = Localization.Localize("WEBERROR_" + response.ErrorCode.ToString().ToUpper());
+						DebugHelpers.LogError("GetPlayer error: {0} ({1}) - {2}", response.ErrorCode, localisedErrorDesc, response.ErrorDescription);
 					}
 				}
 			);
 	}
 
+	protected void Update()
+	{
+	
+	}
 
 }
