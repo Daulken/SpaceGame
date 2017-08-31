@@ -11,7 +11,7 @@ namespace TestHarness
         static void Main(string[] args)
         {
             SpaceServiceReference.SpaceServiceSoapClient client = new SpaceServiceReference.SpaceServiceSoapClient();
-            Console.WriteLine(client.HelloWorld());
+            Console.WriteLine(client.GetPlayer(1));
             Console.ReadLine();
         }
     }
