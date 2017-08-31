@@ -1,1 +1,0 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="SpaceServices.SpaceService" CodeBehind="SpaceService.svc.cs" %>

@@ -56,16 +56,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Service References\SpaceServiceReference\SpaceService.wsdl" />
-    <None Include="Service References\SpaceServiceReference\SpaceService.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\SpaceServiceReference\SpaceService1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\SpaceServiceReference\SpaceService2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\SpaceServiceReference\TestHarness.SpaceServiceReference.Player.datasource">
+    <None Include="Service References\SpaceServiceReference\TestHarness.SpaceServiceReference.HelloWorldResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
   </ItemGroup>

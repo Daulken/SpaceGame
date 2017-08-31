@@ -9,115 +9,129 @@
 //------------------------------------------------------------------------------
 
 namespace TestHarness.SpaceServiceReference {
-    using System.Runtime.Serialization;
-    using System;
     
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Player", Namespace="http://schemas.datacontract.org/2004/07/SpaceServices")]
-    [System.SerializableAttribute()]
-    public partial class Player : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int PlayerIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string PlayerNameField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int PlayerId {
-            get {
-                return this.PlayerIdField;
-            }
-            set {
-                if ((this.PlayerIdField.Equals(value) != true)) {
-                    this.PlayerIdField = value;
-                    this.RaisePropertyChanged("PlayerId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string PlayerName {
-            get {
-                return this.PlayerNameField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.PlayerNameField, value) != true)) {
-                    this.PlayerNameField = value;
-                    this.RaisePropertyChanged("PlayerName");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="SpaceServiceReference.ISpaceService")]
-    public interface ISpaceService {
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="SpaceServiceReference.SpaceServiceSoap")]
+    public interface SpaceServiceSoap {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISpaceService/GetPlayerList", ReplyAction="http://tempuri.org/ISpaceService/GetPlayerListResponse")]
-        TestHarness.SpaceServiceReference.Player[] GetPlayerList();
+        // CODEGEN: Generating message contract since element name HelloWorldResult from namespace http://tempuri.org/ is not marked nillable
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/HelloWorld", ReplyAction="*")]
+        TestHarness.SpaceServiceReference.HelloWorldResponse HelloWorld(TestHarness.SpaceServiceReference.HelloWorldRequest request);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISpaceService/GetPlayerList", ReplyAction="http://tempuri.org/ISpaceService/GetPlayerListResponse")]
-        System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.Player[]> GetPlayerListAsync();
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface ISpaceServiceChannel : TestHarness.SpaceServiceReference.ISpaceService, System.ServiceModel.IClientChannel {
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/HelloWorld", ReplyAction="*")]
+        System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.HelloWorldResponse> HelloWorldAsync(TestHarness.SpaceServiceReference.HelloWorldRequest request);
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class SpaceServiceClient : System.ServiceModel.ClientBase<TestHarness.SpaceServiceReference.ISpaceService>, TestHarness.SpaceServiceReference.ISpaceService {
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class HelloWorldRequest {
         
-        public SpaceServiceClient() {
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="HelloWorld", Namespace="http://tempuri.org/", Order=0)]
+        public TestHarness.SpaceServiceReference.HelloWorldRequestBody Body;
+        
+        public HelloWorldRequest() {
         }
         
-        public SpaceServiceClient(string endpointConfigurationName) : 
+        public HelloWorldRequest(TestHarness.SpaceServiceReference.HelloWorldRequestBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute()]
+    public partial class HelloWorldRequestBody {
+        
+        public HelloWorldRequestBody() {
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class HelloWorldResponse {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="HelloWorldResponse", Namespace="http://tempuri.org/", Order=0)]
+        public TestHarness.SpaceServiceReference.HelloWorldResponseBody Body;
+        
+        public HelloWorldResponse() {
+        }
+        
+        public HelloWorldResponse(TestHarness.SpaceServiceReference.HelloWorldResponseBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class HelloWorldResponseBody {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string HelloWorldResult;
+        
+        public HelloWorldResponseBody() {
+        }
+        
+        public HelloWorldResponseBody(string HelloWorldResult) {
+            this.HelloWorldResult = HelloWorldResult;
+        }
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public interface SpaceServiceSoapChannel : TestHarness.SpaceServiceReference.SpaceServiceSoap, System.ServiceModel.IClientChannel {
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public partial class SpaceServiceSoapClient : System.ServiceModel.ClientBase<TestHarness.SpaceServiceReference.SpaceServiceSoap>, TestHarness.SpaceServiceReference.SpaceServiceSoap {
+        
+        public SpaceServiceSoapClient() {
+        }
+        
+        public SpaceServiceSoapClient(string endpointConfigurationName) : 
                 base(endpointConfigurationName) {
         }
         
-        public SpaceServiceClient(string endpointConfigurationName, string remoteAddress) : 
+        public SpaceServiceSoapClient(string endpointConfigurationName, string remoteAddress) : 
                 base(endpointConfigurationName, remoteAddress) {
         }
         
-        public SpaceServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
+        public SpaceServiceSoapClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(endpointConfigurationName, remoteAddress) {
         }
         
-        public SpaceServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+        public SpaceServiceSoapClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
         }
         
-        public TestHarness.SpaceServiceReference.Player[] GetPlayerList() {
-            return base.Channel.GetPlayerList();
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        TestHarness.SpaceServiceReference.HelloWorldResponse TestHarness.SpaceServiceReference.SpaceServiceSoap.HelloWorld(TestHarness.SpaceServiceReference.HelloWorldRequest request) {
+            return base.Channel.HelloWorld(request);
         }
         
-        public System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.Player[]> GetPlayerListAsync() {
-            return base.Channel.GetPlayerListAsync();
+        public string HelloWorld() {
+            TestHarness.SpaceServiceReference.HelloWorldRequest inValue = new TestHarness.SpaceServiceReference.HelloWorldRequest();
+            inValue.Body = new TestHarness.SpaceServiceReference.HelloWorldRequestBody();
+            TestHarness.SpaceServiceReference.HelloWorldResponse retVal = ((TestHarness.SpaceServiceReference.SpaceServiceSoap)(this)).HelloWorld(inValue);
+            return retVal.Body.HelloWorldResult;
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.HelloWorldResponse> TestHarness.SpaceServiceReference.SpaceServiceSoap.HelloWorldAsync(TestHarness.SpaceServiceReference.HelloWorldRequest request) {
+            return base.Channel.HelloWorldAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.HelloWorldResponse> HelloWorldAsync() {
+            TestHarness.SpaceServiceReference.HelloWorldRequest inValue = new TestHarness.SpaceServiceReference.HelloWorldRequest();
+            inValue.Body = new TestHarness.SpaceServiceReference.HelloWorldRequestBody();
+            return ((TestHarness.SpaceServiceReference.SpaceServiceSoap)(this)).HelloWorldAsync(inValue);
         }
     }
 }
