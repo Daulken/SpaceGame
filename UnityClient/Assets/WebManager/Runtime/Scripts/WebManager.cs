@@ -102,9 +102,13 @@ public static class WebManager
 		HTTP_NetworkReadTimeoutError = 598,
 		HTTP_NetworkConnectTimeoutError = 599,
 
-		// 10xxx Game Errors
+		// 100xx Game Connection Errors
 		Game_InvalidResponse = 10000,
-		Game_PlayerNotFound = 10001,
+		Game_InvalidCredentials = 10001,
+		Game_InvalidGameVersion = 10002,
+
+		// 101xx Game Data Errors
+		Game_PlayerNotFound = 10100,
 	};
 
 	// Generic communication response
@@ -115,10 +119,10 @@ public static class WebManager
 		protected Dictionary<string, string> m_responseHeaders;
 		protected bool m_valid = false;
 
-		public WebResponse(long errorCode, string errorString)
+		public WebResponse(long errorCode, string errorString, string errorDetail)
 		{
 			m_errorCode = (ErrorCode)errorCode;
-			m_errorString = errorString;
+			m_errorString = string.Format("{0}: {1}", errorString, errorDetail);
 			m_responseHeaders = new Dictionary<string, string>();
 		}
 
@@ -172,8 +176,8 @@ public static class WebManager
 	{
 		private byte[] m_responseData;
 
-		public BinaryWebResponse(long errorCode, string errorString)
-			: base(errorCode, errorString)
+		public BinaryWebResponse(long errorCode, string errorString, string errorDetail)
+			: base(errorCode, errorString, errorDetail)
 		{
 			m_responseData = new byte[0];
 		}
@@ -229,8 +233,8 @@ public static class WebManager
 			}
 		}
 
-		public TextWebResponse(long errorCode, string errorString)
-			: base(errorCode, errorString)
+		public TextWebResponse(long errorCode, string errorString, string errorDetail)
+			: base(errorCode, errorString, errorDetail)
 		{
 			m_responseText = "";
 		}
@@ -314,7 +318,7 @@ public static class WebManager
 				{
 					// If an error was found, return the error, otherwise return the result
 					if (request.isNetworkError || request.isHttpError)
-						response(new WebManager.BinaryWebResponse(request.responseCode, request.error));
+						response(new WebManager.BinaryWebResponse(request.responseCode, request.error, request.downloadHandler.text));
 					else
 						response(new WebManager.BinaryWebResponse(request.GetResponseHeaders(), request.downloadHandler.data));
 				}
@@ -329,7 +333,7 @@ public static class WebManager
 				{
 					// If an error was found, return the error, otherwise return the result
 					if (request.isNetworkError || request.isHttpError)
-						response(new WebManager.TextWebResponse(request.responseCode, request.error));
+						response(new WebManager.TextWebResponse(request.responseCode, request.error, request.downloadHandler.text));
 					else
 						response(new WebManager.TextWebResponse(request.GetResponseHeaders(), request.downloadHandler.text));
 				}
@@ -343,8 +347,8 @@ public static class WebManager
 [AddComponentMenu("")]
 internal class WebCommunicator : MonoBehaviour
 {
-	private static string WebAddress = "http://localhost:55271/";
-	private static int TimeoutSeconds = 10;
+	private const string WebAddress = "http://localhost:55271/";
+	private const int TimeoutSeconds = 10;
 
 	private static WebCommunicator ms_instance = null;
 	private Dictionary<string, string> m_headers = new Dictionary<string, string>();
