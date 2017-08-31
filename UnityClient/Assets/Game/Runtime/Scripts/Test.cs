@@ -33,13 +33,12 @@ public class Test : MonoBehaviour
 		DebugHelpers.Log("{0}={1}", m_stringID, Localization.Localize(m_stringID));
 
 		// Log in to secure server
-		Dictionary<string, string> parameters = new Dictionary<string, string>();
-		parameters["username"] = "Chris";
-		parameters["password"] = PasswordSalt + "password";
-		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.svc/Login", parameters, OnLoginResponse);
+		//Dictionary<string, string> parameters = new Dictionary<string, string>();
+		//parameters["username"] = "Chris";
+		//parameters["password"] = PasswordSalt + "password";
+		//WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.svc/Login/", parameters, OnLoginResponse);
 
-		WebManager.RequestResponseText(WebManager.RequestType.Get, "SpaceService.svc/GetPlayerList", "", OnSearchResponse);
-		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.svc/GetPlayerList", "", OnSearchResponse);
+		WebManager.RequestResponseText(WebManager.RequestType.Get, "SpaceService.svc/GetPlayerList/", null, OnSearchResponse);
 	}
 
 	private void OnLoginResponse(WebManager.TextWebResponse response)

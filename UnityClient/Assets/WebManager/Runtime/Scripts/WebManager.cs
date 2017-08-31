@@ -239,10 +239,6 @@ internal class WebCommunicator : MonoBehaviour
 
 	public IEnumerator RequestResponseBinaryInternal(WebManager.RequestType requestType, string subAddress, object parameters, Action<WebManager.BinaryWebResponse> response)
 	{
-		// Encode the object into a JSON string
-		string jsonString = JsonConvert.SerializeObject(parameters);
-		byte[] rawBytes = Encoding.ASCII.GetBytes(jsonString);
-
 		// Get the verb type to request
 		string requestVerb = "";
 		switch (requestType)
@@ -261,15 +257,27 @@ internal class WebCommunicator : MonoBehaviour
 			break;
 		}
 
-		// Send the request
+		// Create the request, with common headers
 		UnityWebRequest request = new UnityWebRequest(WebAddress + subAddress, requestVerb);
-		UploadHandlerRaw uploader = new UploadHandlerRaw(rawBytes);
-		uploader.contentType = "application/json"; //this is ignored?
-		request.uploadHandler = uploader;
 		foreach (string key in m_headers.Keys)
 			request.SetRequestHeader(key, m_headers[key]);
-		request.SetRequestHeader("Content-Type", "application/json");
 		request.timeout = TimeoutSeconds;
+
+		// If parameters have been specified
+		if (parameters != null)
+		{
+			// Encode the object into a JSON string
+			string jsonString = JsonConvert.SerializeObject(parameters);
+			byte[] rawBytes = Encoding.ASCII.GetBytes(jsonString);
+
+			// Assign the upload handler
+			UploadHandlerRaw uploader = new UploadHandlerRaw(rawBytes);
+			uploader.contentType = "application/json"; //this is ignored?
+			request.uploadHandler = uploader;
+			request.SetRequestHeader("Content-Type", "application/json");
+		}
+
+		// Send the request
 		yield return request.Send();
 
 		// If an error was found, return the error, otherwise return the result
@@ -281,10 +289,6 @@ internal class WebCommunicator : MonoBehaviour
 
 	public IEnumerator RequestResponseTextInternal(WebManager.RequestType requestType, string subAddress, object parameters, Action<WebManager.TextWebResponse> response)
 	{
-		// Encode the object into a JSON string
-		string jsonString = JsonConvert.SerializeObject(parameters);
-		byte[] rawBytes = Encoding.ASCII.GetBytes(jsonString);
-
 		// Get the verb type to request
 		string requestVerb = "";
 		switch (requestType)
@@ -303,15 +307,30 @@ internal class WebCommunicator : MonoBehaviour
 			break;
 		}
 
-		// Send the request
+		// Create the request, with common headers
 		UnityWebRequest request = new UnityWebRequest(WebAddress + subAddress, requestVerb);
-		UploadHandlerRaw uploader = new UploadHandlerRaw(rawBytes);
-		uploader.contentType = "application/json"; //this is ignored?
-		request.uploadHandler = uploader;
 		foreach (string key in m_headers.Keys)
 			request.SetRequestHeader(key, m_headers[key]);
-		request.SetRequestHeader("Content-Type", "application/json");
 		request.timeout = TimeoutSeconds;
+
+		// If parameters have been specified
+		if (parameters != null)
+		{
+			// Encode the object into a JSON string
+			string jsonString = JsonConvert.SerializeObject(parameters);
+			if (jsonString.Length > 0)
+			{
+				byte[] rawBytes = Encoding.ASCII.GetBytes(jsonString);
+
+				// Assign the upload handler
+				UploadHandlerRaw uploader = new UploadHandlerRaw(rawBytes);
+				uploader.contentType = "application/json"; //this is ignored?
+				request.uploadHandler = uploader;
+				request.SetRequestHeader("Content-Type", "application/json");
+			}
+		}
+
+		// Send the request
 		yield return request.Send();
 
 		// If an error was found, return the error, otherwise return the result
