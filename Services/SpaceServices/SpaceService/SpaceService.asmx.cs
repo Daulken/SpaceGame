@@ -21,16 +21,12 @@ namespace SpaceService
     {
 
         [WebMethod]
-        [ScriptMethod(UseHttpGet = true, ResponseFormat = ResponseFormat.Json)]
         public string GetPlayer(int PlayerId)
         {
             ServiceWrapper retVal = Player.PlayerWrapper();
             retVal.ResponseSuccessful = true;
 
             Player staticPlayer = new Player();
-            staticPlayer.PlayerId = 1;
-            staticPlayer.PlayerName = "Daulken";
-            staticPlayer.CreditBalance = 1000;
             string sPlayer = JsonConvert.SerializeObject(staticPlayer);
             retVal.ReturnedJsonData = sPlayer;
             return JsonConvert.SerializeObject(retVal);
