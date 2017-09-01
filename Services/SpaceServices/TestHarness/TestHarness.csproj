@@ -64,6 +64,9 @@
     <None Include="Service References\SpaceServiceReference\TestHarness.SpaceServiceReference.GetPlayerResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
+    <None Include="Service References\SpaceServiceReference\TestHarness.SpaceServiceReference.SavePlayerResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -85,6 +88,12 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SpaceLibrary\SpaceLibrary.csproj">
+      <Project>{BD81C1FE-7A20-455A-941C-C2B22323189E}</Project>
+      <Name>SpaceLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

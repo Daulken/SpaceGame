@@ -21,6 +21,13 @@ namespace TestHarness.SpaceServiceReference {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GetPlayer", ReplyAction="*")]
         System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.GetPlayerResponse> GetPlayerAsync(TestHarness.SpaceServiceReference.GetPlayerRequest request);
+        
+        // CODEGEN: Generating message contract since element name PlayerData from namespace http://tempuri.org/ is not marked nillable
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/SavePlayer", ReplyAction="*")]
+        TestHarness.SpaceServiceReference.SavePlayerResponse SavePlayer(TestHarness.SpaceServiceReference.SavePlayerRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/SavePlayer", ReplyAction="*")]
+        System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.SavePlayerResponse> SavePlayerAsync(TestHarness.SpaceServiceReference.SavePlayerRequest request);
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -91,6 +98,71 @@ namespace TestHarness.SpaceServiceReference {
         }
     }
     
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class SavePlayerRequest {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="SavePlayer", Namespace="http://tempuri.org/", Order=0)]
+        public TestHarness.SpaceServiceReference.SavePlayerRequestBody Body;
+        
+        public SavePlayerRequest() {
+        }
+        
+        public SavePlayerRequest(TestHarness.SpaceServiceReference.SavePlayerRequestBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class SavePlayerRequestBody {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(Order=0)]
+        public int PlayerId;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
+        public string PlayerData;
+        
+        public SavePlayerRequestBody() {
+        }
+        
+        public SavePlayerRequestBody(int PlayerId, string PlayerData) {
+            this.PlayerId = PlayerId;
+            this.PlayerData = PlayerData;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class SavePlayerResponse {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="SavePlayerResponse", Namespace="http://tempuri.org/", Order=0)]
+        public TestHarness.SpaceServiceReference.SavePlayerResponseBody Body;
+        
+        public SavePlayerResponse() {
+        }
+        
+        public SavePlayerResponse(TestHarness.SpaceServiceReference.SavePlayerResponseBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute()]
+    public partial class SavePlayerResponseBody {
+        
+        public SavePlayerResponseBody() {
+        }
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public interface SpaceServiceSoapChannel : TestHarness.SpaceServiceReference.SpaceServiceSoap, System.ServiceModel.IClientChannel {
     }
@@ -141,6 +213,32 @@ namespace TestHarness.SpaceServiceReference {
             inValue.Body = new TestHarness.SpaceServiceReference.GetPlayerRequestBody();
             inValue.Body.PlayerId = PlayerId;
             return ((TestHarness.SpaceServiceReference.SpaceServiceSoap)(this)).GetPlayerAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        TestHarness.SpaceServiceReference.SavePlayerResponse TestHarness.SpaceServiceReference.SpaceServiceSoap.SavePlayer(TestHarness.SpaceServiceReference.SavePlayerRequest request) {
+            return base.Channel.SavePlayer(request);
+        }
+        
+        public void SavePlayer(int PlayerId, string PlayerData) {
+            TestHarness.SpaceServiceReference.SavePlayerRequest inValue = new TestHarness.SpaceServiceReference.SavePlayerRequest();
+            inValue.Body = new TestHarness.SpaceServiceReference.SavePlayerRequestBody();
+            inValue.Body.PlayerId = PlayerId;
+            inValue.Body.PlayerData = PlayerData;
+            TestHarness.SpaceServiceReference.SavePlayerResponse retVal = ((TestHarness.SpaceServiceReference.SpaceServiceSoap)(this)).SavePlayer(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.SavePlayerResponse> TestHarness.SpaceServiceReference.SpaceServiceSoap.SavePlayerAsync(TestHarness.SpaceServiceReference.SavePlayerRequest request) {
+            return base.Channel.SavePlayerAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.SavePlayerResponse> SavePlayerAsync(int PlayerId, string PlayerData) {
+            TestHarness.SpaceServiceReference.SavePlayerRequest inValue = new TestHarness.SpaceServiceReference.SavePlayerRequest();
+            inValue.Body = new TestHarness.SpaceServiceReference.SavePlayerRequestBody();
+            inValue.Body.PlayerId = PlayerId;
+            inValue.Body.PlayerData = PlayerData;
+            return ((TestHarness.SpaceServiceReference.SpaceServiceSoap)(this)).SavePlayerAsync(inValue);
         }
     }
 }

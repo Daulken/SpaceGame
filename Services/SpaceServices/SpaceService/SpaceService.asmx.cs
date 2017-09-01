@@ -1,10 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using SpaceLibrary;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Script.Services;
 using System.Web.Services;
 
 namespace SpaceService
@@ -19,17 +16,51 @@ namespace SpaceService
     // [System.Web.Script.Services.ScriptService]
     public class SpaceService : System.Web.Services.WebService
     {
-
         [WebMethod]
         public string GetPlayer(int PlayerId)
         {
             ServiceWrapper retVal = Player.PlayerWrapper();
-            retVal.ResponseSuccessful = true;
 
-            Player staticPlayer = new Player();
-            string sPlayer = JsonConvert.SerializeObject(staticPlayer);
-            retVal.ReturnedJsonData = sPlayer;
-            return JsonConvert.SerializeObject(retVal);
+            using (DataConnection dbConnection = new DataConnection())
+            {
+                string query = "SELECT PlayerId, PlayerData FROM Player";
+                MySqlCommand cmd = new MySqlCommand(query, dbConnection.Connection);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    retVal.ResponseSuccessful = true;
+                    Player returnPlayer = new Player();
+
+                    returnPlayer.PlayerId = reader.GetInt32(0);
+                    retVal.ReturnedJsonData = reader.GetString(1);
+                    reader.Close();
+                    return JsonConvert.SerializeObject(retVal);
+                }
+                else
+                {
+                    retVal.ResponseSuccessful = false;
+                    retVal.ResponseMessage = "Player not found";
+                    retVal.ResponseCode = 1000;
+                    reader.Close();
+                    return JsonConvert.SerializeObject(retVal);
+                }
+            }
+        }
+
+        [WebMethod]
+        public void SavePlayer(int PlayerId, string PlayerData)
+        {
+            ServiceWrapper retVal = Player.PlayerWrapper();
+
+            using (DataConnection dbConnection = new DataConnection())
+            {
+                string query = "UPDATE Player SET PlayerData=@PlayerData WHERE PlayerId=@PlayerId";
+                MySqlCommand cmd = new MySqlCommand(query, dbConnection.Connection);
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@PlayerId", PlayerId);
+                cmd.Parameters.AddWithValue("@PlayerData", PlayerData);
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }
