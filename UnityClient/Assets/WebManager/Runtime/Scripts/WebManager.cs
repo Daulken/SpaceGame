@@ -296,7 +296,7 @@ public static class WebManager
 	// Log in using given credentials
 	public static void LogIn(string username, string password, Action<WebResponse> response)
 	{
-		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().RequestLogInInternal(username, password, response));
+		WebCommunicator.Instance.StartCoroutine(WebCommunicator.Instance.RequestLogInInternal(username, password, response));
 	}
 
 	// Query whether currently logged in
@@ -304,32 +304,32 @@ public static class WebManager
 	{
 		get
 		{
-			return WebCommunicator.GetInstance().LoggedIn;
+			return WebCommunicator.Instance.LoggedIn;
 		}
 	}
 
 	// Register a common header to add to every request
 	public static void AddHeader(string header, string value)
 	{
-		WebCommunicator.GetInstance().AddHeaderInternal(header, value);
+		WebCommunicator.Instance.AddHeaderInternal(header, value);
 	}
 
 	// Unregister a common header from every request
 	public static void RemoveHeader(string header)
 	{
-		WebCommunicator.GetInstance().RemoveHeaderInternal(header);
+		WebCommunicator.Instance.RemoveHeaderInternal(header);
 	}
 
 	// Get the value of a registered common header added to every request
 	public static bool GetHeader(string header, out string value)
 	{
-		return WebCommunicator.GetInstance().GetHeaderInternal(header, out value);
+		return WebCommunicator.Instance.GetHeaderInternal(header, out value);
 	}
 
 	// Make a request, and get a binary response
 	public static void RequestResponseBinary(RequestType requestType, string subAddress, Dictionary<string, string> formData, object jsonPutData, Action<BinaryWebResponse> response)
 	{
-		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().RequestResponseInternal(requestType, subAddress, formData, jsonPutData,
+		WebCommunicator.Instance.StartCoroutine(WebCommunicator.Instance.RequestResponseInternal(requestType, subAddress, formData, jsonPutData,
 				(UnityWebRequest request) =>
 				{
 					// If an error was found, return the error, otherwise return the result
@@ -344,7 +344,7 @@ public static class WebManager
 	// Make a request, and get a text response
 	public static void RequestResponseText(RequestType requestType, string subAddress, Dictionary<string, string> formData, object jsonPutData, Action<TextWebResponse> response)
 	{
-		WebCommunicator.GetInstance().StartCoroutine(WebCommunicator.GetInstance().RequestResponseInternal(requestType, subAddress, formData, jsonPutData,
+		WebCommunicator.Instance.StartCoroutine(WebCommunicator.Instance.RequestResponseInternal(requestType, subAddress, formData, jsonPutData,
 				(UnityWebRequest request) =>
 				{
 					// If an error was found, return the error, otherwise return the result
@@ -361,13 +361,12 @@ public static class WebManager
 
 // Component used for parallel processing communications
 [AddComponentMenu("")]
-internal class WebCommunicator : MonoBehaviour
+internal class WebCommunicator : Singleton<WebCommunicator>
 {
 	private const string WebAddress = "http://localhost:55271/";		// Server to connect to
 	private const int TimeoutSeconds = 10;								// Connection timeout
 	private const int GameVersion = 1;                                  // Current game data version
 
-	private static WebCommunicator ms_instance = null;
 	private Dictionary<string, string> m_headers = new Dictionary<string, string>();
 
 	private bool m_loggedIn = false;
@@ -391,69 +390,9 @@ internal class WebCommunicator : MonoBehaviour
 		}
 	};
 
-	// Awake is called at game startup, regardless of enable state
-	private void Awake()
+	// Guarantee this will be always a singleton only - make the constructor protected!
+	protected WebCommunicator()
 	{
-		// If no instance exists, use this one
-		if (ms_instance == null)
-			ms_instance = this;
-
-		// If we're not the instance that things use
-		if (ms_instance != this)
-		{
-			// Remove ourself, as we're duplicate
-			bool destroyGameObject = true;
-			Component[] components = gameObject.GetComponents(typeof(Component));
-			foreach (Component component in components)
-			{
-				if (component is Transform)
-					continue;
-				if (component is WebCommunicator)
-					continue;
-				destroyGameObject = false;
-				break;
-			}
-
-			if (destroyGameObject)
-				Destroy(gameObject);
-			else
-				Destroy(this);
-		}
-		// This is our instance
-		else
-		{
-			// Ensure we don't get destroyed between scenes
-			DontDestroyOnLoad(gameObject);
-		}
-	}
-
-	// Called when this object is destroyed
-	protected virtual void OnDestroy()
-	{
-		// Remove our global instance pointer
-		if (ms_instance == this)
-			ms_instance = null;
-	}
-
-	// Get an instance of the web communicator
-	public static WebCommunicator GetInstance()
-	{
-		// If an instance exists already, do nothing
-		if ((ms_instance != null) && (ms_instance.gameObject != null))
-			return ms_instance;
-
-		// Look for an instance of this type in the scene already, in case a singleton was added
-		ms_instance = (WebCommunicator)GameObject.FindObjectOfType(typeof(WebCommunicator));
-
-		// Automatically create one if not found
-		if (ms_instance == null)
-		{
-			GameObject go = new GameObject("_Global_WebCommunicator");
-			go.hideFlags = HideFlags.HideAndDontSave;
-			ms_instance = go.AddComponent<WebCommunicator>();
-		}
-
-		return ms_instance;
 	}
 
 	// Register a common header to add to every request

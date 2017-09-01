@@ -80,7 +80,7 @@ public static class LocalisationPropertyDrawer
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			// Update the cached localisation keys for this stringtable if required, and return the cached data
-			Localization.LocalisationData cachedData = Localization.UpdateLocalisationData();
+			Localization.LocalisationData cachedData = Localization.Instance.UpdateLocalisationData();
 
 			// If the property is an array
 			if (typeof(System.Array).IsAssignableFrom(fieldInfo.FieldType) && (property.type != "string"))

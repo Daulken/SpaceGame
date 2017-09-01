@@ -368,7 +368,7 @@ namespace EditorScript {
 			m_visitedObjects.Clear();
 
 			// Get up to date localisation data
-			m_localisationData = Localization.UpdateLocalisationData();
+			m_localisationData = Localization.Instance.UpdateLocalisationData();
 				
 			// Find all components in the scene
 			Component[] components = Resources.FindObjectsOfTypeAll(typeof(Component)) as Component[];

@@ -161,6 +161,20 @@ public static class UnityExtensions
 	//---------------------------------------------------
 
 	/// <summary>
+	/// Gets or add a component. Usage example:
+	/// BoxCollider boxCollider = transform.GetOrAddComponent<BoxCollider>();
+	/// </summary>
+	public static T GetOrAddComponent<T>(this Component child) where T : Component
+	{
+		T result = child.GetComponent<T>();
+		if (result == null)
+			result = child.gameObject.AddComponent<T>();
+		return result;
+	}
+
+	//---------------------------------------------------
+
+	/// <summary>
 	/// Check if the given GameObject is a parent of the current transform
 	/// </summary>
 	public static bool IsParentOf(this Transform transform, GameObject possibleParent)
