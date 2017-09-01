@@ -16,6 +16,17 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="SavePlayer">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="PlayerId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="PlayerData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SavePlayerResponse">
+        <s:complexType />
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="GetPlayerSoapIn">
@@ -24,10 +35,20 @@
   <wsdl:message name="GetPlayerSoapOut">
     <wsdl:part name="parameters" element="tns:GetPlayerResponse" />
   </wsdl:message>
+  <wsdl:message name="SavePlayerSoapIn">
+    <wsdl:part name="parameters" element="tns:SavePlayer" />
+  </wsdl:message>
+  <wsdl:message name="SavePlayerSoapOut">
+    <wsdl:part name="parameters" element="tns:SavePlayerResponse" />
+  </wsdl:message>
   <wsdl:portType name="SpaceServiceSoap">
     <wsdl:operation name="GetPlayer">
       <wsdl:input message="tns:GetPlayerSoapIn" />
       <wsdl:output message="tns:GetPlayerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SavePlayer">
+      <wsdl:input message="tns:SavePlayerSoapIn" />
+      <wsdl:output message="tns:SavePlayerSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SpaceServiceSoap" type="tns:SpaceServiceSoap">
@@ -41,11 +62,29 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="SavePlayer">
+      <soap:operation soapAction="http://tempuri.org/SavePlayer" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="SpaceServiceSoap12" type="tns:SpaceServiceSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetPlayer">
       <soap12:operation soapAction="http://tempuri.org/GetPlayer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SavePlayer">
+      <soap12:operation soapAction="http://tempuri.org/SavePlayer" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
