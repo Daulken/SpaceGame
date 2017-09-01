@@ -23,8 +23,9 @@ namespace SpaceService
 
             using (DataConnection dbConnection = new DataConnection())
             {
-                string query = "SELECT PlayerId, PlayerData FROM Player";
+                string query = "SELECT PlayerId, PlayerData FROM Player WHERE PlayerId=@PlayerId";
                 MySqlCommand cmd = new MySqlCommand(query, dbConnection.Connection);
+                cmd.Parameters.AddWithValue("@PlayerId", PlayerId);
                 MySqlDataReader reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
