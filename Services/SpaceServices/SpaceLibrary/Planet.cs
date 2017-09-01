@@ -21,6 +21,13 @@ namespace SpaceLibrary
 			{
 				get; set;
 			}
+
+			public SystemCoordinate(double x, double y, double z)
+			{
+				X = x;
+				Y = y;
+				Z = z;
+			}
 		};
 
 		public SystemCoordinate Position
