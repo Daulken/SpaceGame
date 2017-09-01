@@ -87,7 +87,7 @@ namespace StarGeneration.Galaxies
 				{
 				case SpaceLibrary.Star.Class.O:
 					star.Size = Mathf.Lerp(6.6f, 20.0f, (float)random.NextDouble());
-					star.Temperature = random.NormallyDistributedSingle(8000, 50000, 30000, 100000);
+					star.Temperature = random.NormallyDistributedSingle(8000, 40000, 30000, 60000);
 					break;
 				case SpaceLibrary.Star.Class.B:
 					star.Size = Mathf.Lerp(1.8f, 6.6f, (float)random.NextDouble());
