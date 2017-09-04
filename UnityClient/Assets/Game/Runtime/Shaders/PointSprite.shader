@@ -22,7 +22,7 @@ Shader "Unlit/Galaxy"
 		// Enable alpha-blending
 		ZWrite Off
 		ZTest Always
-		Blend SrcAlpha OneMinusSrcAlpha
+		Blend SrcAlpha One
 
 		Pass
 		{
