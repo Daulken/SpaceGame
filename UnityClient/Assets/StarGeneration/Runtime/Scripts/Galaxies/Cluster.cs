@@ -31,7 +31,7 @@ namespace StarGeneration.Galaxies
             _deviationZ = deviationZ;
         }
 
-        protected internal override IEnumerable<SpaceLibrary.Star> Generate(System.Random random)
+        protected internal override IEnumerable<SpaceLibrary.StarSystem> Generate(System.Random random)
         {
             var count = Math.Max(0, random.NormallyDistributedSingle(_countDeviation, _countMean));
             if (count <= 0)
@@ -45,8 +45,8 @@ namespace StarGeneration.Galaxies
                     random.NormallyDistributedSingle(_deviationZ, 0)
                 );
 
-                foreach (var star in _basis.Generate(random))
-                    yield return star.Offset(center);
+                foreach (var starSystem in _basis.Generate(random))
+                    yield return starSystem.Offset(center);
             }
         }
     }

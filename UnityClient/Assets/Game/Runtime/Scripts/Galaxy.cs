@@ -17,11 +17,15 @@ public class Galaxy : MonoBehaviour
 	protected void Start()
 	{
 		// Generate a galaxy using a fixed seed
-		StarGeneration.Galaxy galaxy = StarGeneration.Galaxy.Generate(new StarGeneration.Galaxies.Spiral(), new System.Random(543554));
-		SpaceLibrary.Star[] stars = galaxy.Stars.ToArray();
-		int noofStars = stars.Length;
+		StarGeneration.Galaxy galaxy = StarGeneration.Galaxy.Generate(new StarGeneration.Galaxies.Spiral(), new System.Random(System.DateTime.Now.Millisecond));
 
-		// Set up a point cloud to render this
+		// Count the stars in the systems
+		SpaceLibrary.StarSystem[] starSystems = galaxy.StarSystems.ToArray();
+		int noofStars = 0;
+		foreach (SpaceLibrary.StarSystem starSystem in starSystems)
+			noofStars += starSystem.Stars.Length;
+
+		// Set up a point cloud to render all of the stars
 		m_galaxyMesh = new Mesh();
 		GetComponent<MeshFilter>().mesh = m_galaxyMesh;
 		Vector3[] points = new Vector3[noofStars * 4];
@@ -33,48 +37,53 @@ public class Galaxy : MonoBehaviour
 		int vertexOffset = 0;
 		int indexOffset = 0;
 
-		foreach (Star star in stars)
+		foreach (SpaceLibrary.StarSystem starSystem in starSystems)
 		{
-			Vector3 tempColour = star.TemperatureColour();
-			Color colour = new Color(tempColour.x, tempColour.y, tempColour.z);
-			Vector3 position = star.Position.ToVector3();
-			float radius = (float)star.Size * 5.0f;
+			Vector3 systemPosition = starSystem.Position.ToVector3();
 
-			// Write top-left
-			points[vertexOffset + 0] = position;
-			colours[vertexOffset + 0] = colour;
-			uv[vertexOffset + 0] = new Vector2(0.0f, 1.0f);
-			offset[vertexOffset + 0] = new Vector2(radius, -radius);
+			foreach (SpaceLibrary.Star star in starSystem.Stars)
+			{
+				Vector3 tempColour = star.TemperatureColour();
+				Color colour = new Color(tempColour.x, tempColour.y, tempColour.z);
+				float radius = (float)star.Radius * 6.957f;
+				Vector3 position = systemPosition;		// Ignoring orbital radius for now
 
-			// Write top-right
-			points[vertexOffset + 1] = position;
-			colours[vertexOffset + 1] = colour;
-			uv[vertexOffset + 1] = new Vector2(1.0f, 1.0f);
-			offset[vertexOffset + 1] = new Vector2(radius, radius);
+				// Write top-left
+				points[vertexOffset + 0] = position;
+				colours[vertexOffset + 0] = colour;
+				uv[vertexOffset + 0] = new Vector2(0.0f, 1.0f);
+				offset[vertexOffset + 0] = new Vector2(radius, -radius);
 
-			// Write bottom-left
-			points[vertexOffset + 2] = position;
-			colours[vertexOffset + 2] = colour;
-			uv[vertexOffset + 2] = new Vector2(0.0f, 0.0f);
-			offset[vertexOffset + 2] = new Vector2(-radius, -radius);
+				// Write top-right
+				points[vertexOffset + 1] = position;
+				colours[vertexOffset + 1] = colour;
+				uv[vertexOffset + 1] = new Vector2(1.0f, 1.0f);
+				offset[vertexOffset + 1] = new Vector2(radius, radius);
 
-			// Write bottom-right
-			points[vertexOffset + 3] = position;
-			colours[vertexOffset + 3] = colour;
-			uv[vertexOffset + 3] = new Vector2(1.0f, 0.0f);
-			offset[vertexOffset + 3] = new Vector2(-radius, radius);
+				// Write bottom-left
+				points[vertexOffset + 2] = position;
+				colours[vertexOffset + 2] = colour;
+				uv[vertexOffset + 2] = new Vector2(0.0f, 0.0f);
+				offset[vertexOffset + 2] = new Vector2(-radius, -radius);
 
-			// Write indices
-			indices[indexOffset + 0] = vertexOffset + 0;
-			indices[indexOffset + 1] = vertexOffset + 2;
-			indices[indexOffset + 2] = vertexOffset + 1;
-			indices[indexOffset + 3] = vertexOffset + 2;
-			indices[indexOffset + 4] = vertexOffset + 3;
-			indices[indexOffset + 5] = vertexOffset + 1;
+				// Write bottom-right
+				points[vertexOffset + 3] = position;
+				colours[vertexOffset + 3] = colour;
+				uv[vertexOffset + 3] = new Vector2(1.0f, 0.0f);
+				offset[vertexOffset + 3] = new Vector2(-radius, radius);
 
-			// Move to the next quad
-			vertexOffset += 4;
-			indexOffset += 6;
+				// Write indices
+				indices[indexOffset + 0] = vertexOffset + 0;
+				indices[indexOffset + 1] = vertexOffset + 2;
+				indices[indexOffset + 2] = vertexOffset + 1;
+				indices[indexOffset + 3] = vertexOffset + 2;
+				indices[indexOffset + 4] = vertexOffset + 3;
+				indices[indexOffset + 5] = vertexOffset + 1;
+
+				// Move to the next quad
+				vertexOffset += 4;
+				indexOffset += 6;
+			}
 		}
 
 		m_galaxyMesh.vertices = points;

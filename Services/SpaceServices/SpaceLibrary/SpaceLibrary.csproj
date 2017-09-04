@@ -36,6 +36,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsteroidBelt.cs" />
+    <Compile Include="StarSystem.cs" />
     <Compile Include="Star.cs" />
     <Compile Include="Planet.cs" />
     <Compile Include="Cargo.cs" />

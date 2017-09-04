@@ -64,38 +64,38 @@ namespace StarGeneration.Galaxies
             CentralVoidSizeDeviation = 7;
         }
 
-		protected internal override IEnumerable<SpaceLibrary.Star> Generate(System.Random random)
+		protected internal override IEnumerable<SpaceLibrary.StarSystem> Generate(System.Random random)
 		{
 			var centralVoidSize = random.NormallyDistributedSingle(CentralVoidSizeDeviation, CentralVoidSizeMean);
 			if (centralVoidSize < 0)
 				centralVoidSize = 0;
 			var centralVoidSizeSqr = centralVoidSize * centralVoidSize;
 
-			foreach (var star in GenerateArms(random))
+			foreach (var starSystem in GenerateArms(random))
 			{
-				if (star.Position.ToVector3().sqrMagnitude > centralVoidSizeSqr)
-					yield return star;
+				if (starSystem.Position.ToVector3().sqrMagnitude > centralVoidSizeSqr)
+					yield return starSystem;
 			}
 
-			foreach (var star in GenerateCenter(random))
+			foreach (var starSystem in GenerateCenter(random))
 			{
-				if (star.Position.ToVector3().sqrMagnitude > centralVoidSizeSqr)
-					yield return star;
+				if (starSystem.Position.ToVector3().sqrMagnitude > centralVoidSizeSqr)
+					yield return starSystem;
 			}
 
-			foreach (var star in GenerateBackgroundStars(random))
+			foreach (var starSystem in GenerateBackgroundStars(random))
 			{
-				if (star.Position.ToVector3().sqrMagnitude > centralVoidSizeSqr)
-					yield return star;
+				if (starSystem.Position.ToVector3().sqrMagnitude > centralVoidSizeSqr)
+					yield return starSystem;
 			}
 		}
 
-        private IEnumerable<SpaceLibrary.Star> GenerateBackgroundStars(System.Random random)
+        private IEnumerable<SpaceLibrary.StarSystem> GenerateBackgroundStars(System.Random random)
         {
             return new Sphere(Size, 0.000001f, 0.0000001f, 0.35f, 0.125f, 0.35f).Generate(random);
         }
 
-        private IEnumerable<SpaceLibrary.Star> GenerateCenter(System.Random random)
+        private IEnumerable<SpaceLibrary.StarSystem> GenerateCenter(System.Random random)
         {
             //Add a single central cluster
             var sphere = new Sphere(
@@ -111,11 +111,11 @@ namespace StarGeneration.Galaxies
                 CenterClusterCountMean, CenterClusterCountDeviation, Size * CenterClusterPositionDeviation, Size * CenterClusterPositionDeviation, Size * CenterClusterPositionDeviation
             );
 
-            foreach (var star in cluster.Generate(random))
-                yield return star.Swirl(Vector3.up, Swirl * 5);
+            foreach (var starSystem in cluster.Generate(random))
+                yield return starSystem.Swirl(Vector3.up, Swirl * 5);
         }
 
-        private IEnumerable<SpaceLibrary.Star> GenerateArms(System.Random random)
+        private IEnumerable<SpaceLibrary.StarSystem> GenerateArms(System.Random random)
         {
             int arms = random.Next(MinimumArms, MaximumArms);
             float armAngle = (float) ((Math.PI * 2) / arms);
@@ -141,9 +141,9 @@ namespace StarGeneration.Galaxies
                     var clsScaleMax = MaxArmClusterScale * Size;
                     var cSize = random.NormallyDistributedSingle(clsScaleDev, clsScaleMin * 0.5f + clsScaleMax * 0.5f, clsScaleMin, clsScaleMax);
 
-                    var stars = new Sphere(cSize, densityMean: 0.00025f, deviationX: 1, deviationY: 1, deviationZ: 1).Generate(random);
-                    foreach (var star in stars)
-                        yield return star.Offset(center).Swirl(Vector3.up, Swirl);
+                    var starSystems = new Sphere(cSize, densityMean: 0.00025f, deviationX: 1, deviationY: 1, deviationZ: 1).Generate(random);
+                    foreach (var starSystem in starSystems)
+                        yield return starSystem.Offset(center).Swirl(Vector3.up, Swirl);
                 }
             }
         }

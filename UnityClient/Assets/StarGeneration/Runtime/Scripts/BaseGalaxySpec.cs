@@ -6,6 +6,6 @@ namespace StarGeneration
 {
     public abstract class BaseGalaxySpec
     {
-        protected internal abstract IEnumerable<SpaceLibrary.Star> Generate(System.Random random);
+        protected internal abstract IEnumerable<SpaceLibrary.StarSystem> Generate(System.Random random);
     }
 }

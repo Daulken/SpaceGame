@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SpaceLibrary
 {
-    public class Planet
+    public class AsteroidBelt
     {
 		/// <summary>
 		/// Orbital distance in astronomical units from the system centre
@@ -15,7 +15,7 @@ namespace SpaceLibrary
 		}
 
 		/// <summary>
-		/// Name of the planet
+		/// Name of the asteroid belt
 		/// </summary>
 		public string Name
 		{
@@ -23,25 +23,9 @@ namespace SpaceLibrary
 		}
 
 		/// <summary>
-		/// Radius in kilometers
+		/// Number of asteroids left in the belt
 		/// </summary>
-		public double Radius
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Number of available plots to purchase
-		/// </summary>
-		public int PlotCount
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Number of plots left to purchase
-		/// </summary>
-		public int PlotsAvailable
+		public int AsteroidCount
 		{
 			get; set;
 		}

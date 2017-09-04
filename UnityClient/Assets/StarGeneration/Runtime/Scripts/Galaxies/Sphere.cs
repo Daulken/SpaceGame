@@ -35,7 +35,7 @@ namespace StarGeneration.Galaxies
             _deviationZ = deviationZ;
         }
 
-        protected internal override IEnumerable<SpaceLibrary.Star> Generate(System.Random random)
+        protected internal override IEnumerable<SpaceLibrary.StarSystem> Generate(System.Random random)
         {
             var density = Math.Max(0, random.NormallyDistributedSingle(_densityDeviation, _densityMean));
             var countMax = Math.Max(0, (int)(_size * _size * _size * density));
@@ -49,9 +49,19 @@ namespace StarGeneration.Galaxies
                 Vector3 starPosition = new Vector3(random.NormallyDistributedSingle(_deviationX * _size, 0), random.NormallyDistributedSingle(_deviationY * _size, 0), random.NormallyDistributedSingle(_deviationZ * _size, 0));
 				float starPositionFractionOfSphereRadius = starPosition.magnitude / _size;
 
-				// Generate a new star at this position
-				SpaceLibrary.Star star = new SpaceLibrary.Star();
-				star.Position = new SpaceLibrary.Star.GalacticCoordinate(starPosition.x, starPosition.y, starPosition.z);
+				// Generate a new star system at this position
+				SpaceLibrary.StarSystem starSystem = new SpaceLibrary.StarSystem();
+				starSystem.Position = new SpaceLibrary.GalacticCoordinate(starPosition.x, starPosition.y, starPosition.z);
+
+				// Generate a random star system name.
+				starSystem.Name = StarName.Generate(random);
+
+				// Generate a single star in this system, with a 0 orbital distance (no binary systems)
+				SpaceLibrary.Star[] stars = new SpaceLibrary.Star[1];
+				starSystem.Stars = stars;
+
+				stars[0] = new SpaceLibrary.Star();
+				stars[0].OrbitalDistance = 0.0f;
 
 				//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 				// Class,	Effective Temp.,	Vega-relative colour label,	Chromaticity,		Main-sequence mass,	Main-sequence radius,	Main-sequence luminosity,	Hydrogen lines,	Fraction of stars
@@ -68,58 +78,58 @@ namespace StarGeneration.Galaxies
 				// Bias this toward a higher class of star nearer the galactic centre.
 				double classUnit = random.NormallyDistributedSingle(50, Mathf.Lerp(80, 20, starPositionFractionOfSphereRadius), 0, 100);
 				if (classUnit < 0.00003)
-					star.Classification = SpaceLibrary.Star.Class.O;
+					stars[0].Classification = SpaceLibrary.Star.Class.O;
 				else if (classUnit < (0.00003 + 0.13))
-					star.Classification = SpaceLibrary.Star.Class.B;
+					stars[0].Classification = SpaceLibrary.Star.Class.B;
 				else if (classUnit < (0.00003 + 0.13 + 0.6))
-					star.Classification = SpaceLibrary.Star.Class.A;
+					stars[0].Classification = SpaceLibrary.Star.Class.A;
 				else if (classUnit < (0.00003 + 0.13 + 0.6 + 3.0))
-					star.Classification = SpaceLibrary.Star.Class.F;
+					stars[0].Classification = SpaceLibrary.Star.Class.F;
 				else if (classUnit < (0.00003 + 0.13 + 0.6 + 3.0 + 7.6))
-					star.Classification = SpaceLibrary.Star.Class.G;
+					stars[0].Classification = SpaceLibrary.Star.Class.G;
 				else if (classUnit < (0.00003 + 0.13 + 0.6 + 3.0 + 7.6 + 12.1))
-					star.Classification = SpaceLibrary.Star.Class.K;
+					stars[0].Classification = SpaceLibrary.Star.Class.K;
 				else
-					star.Classification = SpaceLibrary.Star.Class.M;
+					stars[0].Classification = SpaceLibrary.Star.Class.M;
 
 				// Calculate a size and temperature of the star based on the class
-				switch (star.Classification)
+				switch (stars[0].Classification)
 				{
 				case SpaceLibrary.Star.Class.O:
-					star.Size = Mathf.Lerp(6.6f, 20.0f, (float)random.NextDouble());
-					star.Temperature = random.NormallyDistributedSingle(8000, 40000, 30000, 60000);
+					stars[0].Radius = Mathf.Lerp(6.6f, 20.0f, (float)random.NextDouble());
+					stars[0].Temperature = random.NormallyDistributedSingle(8000, 40000, 30000, 60000);
 					break;
 				case SpaceLibrary.Star.Class.B:
-					star.Size = Mathf.Lerp(1.8f, 6.6f, (float)random.NextDouble());
-					star.Temperature = Mathf.Lerp(10000, 30000, (float)random.NextDouble());
+					stars[0].Radius = Mathf.Lerp(1.8f, 6.6f, (float)random.NextDouble());
+					stars[0].Temperature = Mathf.Lerp(10000, 30000, (float)random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.A:
-					star.Size = Mathf.Lerp(1.4f, 1.8f, (float)random.NextDouble());
-					star.Temperature = Mathf.Lerp(7500, 10000, (float)random.NextDouble());
+					stars[0].Radius = Mathf.Lerp(1.4f, 1.8f, (float)random.NextDouble());
+					stars[0].Temperature = Mathf.Lerp(7500, 10000, (float)random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.F:
-					star.Size = Mathf.Lerp(1.15f, 1.4f, (float)random.NextDouble());
-					star.Temperature = Mathf.Lerp(6000, 7500, (float)random.NextDouble());
+					stars[0].Radius = Mathf.Lerp(1.15f, 1.4f, (float)random.NextDouble());
+					stars[0].Temperature = Mathf.Lerp(6000, 7500, (float)random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.G:
-					star.Size = Mathf.Lerp(0.96f, 1.15f, (float)random.NextDouble());
-					star.Temperature = Mathf.Lerp(5200, 6000, (float)random.NextDouble());
+					stars[0].Radius = Mathf.Lerp(0.96f, 1.15f, (float)random.NextDouble());
+					stars[0].Temperature = Mathf.Lerp(5200, 6000, (float)random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.K:
-					star.Size = Mathf.Lerp(0.7f, 0.96f, (float)random.NextDouble());
-					star.Temperature = Mathf.Lerp(3700, 5200, (float)random.NextDouble());
+					stars[0].Radius = Mathf.Lerp(0.7f, 0.96f, (float)random.NextDouble());
+					stars[0].Temperature = Mathf.Lerp(3700, 5200, (float)random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.M:
-					star.Size = Mathf.Lerp(0.4f, 0.7f, (float)random.NextDouble());
-					star.Temperature = Mathf.Lerp(2400, 3700, (float)random.NextDouble());
+					stars[0].Radius = Mathf.Lerp(0.4f, 0.7f, (float)random.NextDouble());
+					stars[0].Temperature = Mathf.Lerp(2400, 3700, (float)random.NextDouble());
 					break;
 				}
 
-				// Generate a random star name.
+				// Assign the system name to the star too
 				// TODO: Use classification and temperature to calculate post fix
-				star.Name = StarName.Generate(random);
+				stars[0].Name = starSystem.Name;
 
-				yield return star;
+				yield return starSystem;
             }
         }
     }

@@ -6,11 +6,11 @@ namespace StarGeneration
 {
     public class Galaxy
     {
-        public IEnumerable<SpaceLibrary.Star> Stars { get; private set; }
+        public IEnumerable<SpaceLibrary.StarSystem> StarSystems { get; private set; }
 
-        private Galaxy(IEnumerable<SpaceLibrary.Star> stars)
+        private Galaxy(IEnumerable<SpaceLibrary.StarSystem> starSystems)
         {
-            Stars = stars;
+			StarSystems = starSystems;
         }
 
 		public static Galaxy Generate(BaseGalaxySpec spec, System.Random random)
