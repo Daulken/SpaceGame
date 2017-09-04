@@ -59,10 +59,8 @@ namespace StarGeneration
 
 		private double m_coreRadius;        /// Radius of the inner core
 		private double m_galaxyRadius;      /// Radius of the galaxy
-		private double m_radFarField;       /// The radius after which all density waves must have circular shape
+		private double m_farFieldRadius;    /// The radius after which all density waves must have circular shape
 		private double m_sigma;             /// Distribution of stars
-
-		private double m_dustRenderSize;
 
 		private int m_numStars;             /// Total number of stars
 		private int m_numDust;              /// Number of Dust Particles
@@ -76,19 +74,12 @@ namespace StarGeneration
 
 		private bool m_bHasDarkMatter;
 
-		public int[] m_numberByRad = new int[100];  /// Histogram showing distribution of stars
-
 		public GalaxyGenerator()
 		{
 		}
 
-		public void Reset(System.Random random, double galaxyRadius, double coreRadius, double deltaAng, double ex1, double ex2, double sigma, double velInner, double velOuter, int numStars, bool hasDarkMatter, int pertN, double pertAmp, double dustRenderSize)
+		public void Reset(System.Random random, double galaxyRadius, double coreRadius, double deltaAng, double ex1, double ex2, double sigma, double velInner, double velOuter, int numStars, bool hasDarkMatter, int pertN, double pertAmp)
 		{
-			m_sigma = 0.45;
-			m_numH2 = 300;
-			m_time = 0;
-			m_timeStep = 0;
-
 			m_random = random;
 			m_elEx1 = ex1;
 			m_elEx2 = ex2;
@@ -98,25 +89,23 @@ namespace StarGeneration
 			m_angleOffset = deltaAng;
 			m_coreRadius = coreRadius;
 			m_galaxyRadius = galaxyRadius;
-			m_radFarField = m_galaxyRadius * 2;  // there is no science behind this threshold it just looks nice
+			m_farFieldRadius = m_galaxyRadius * 2;  // there is no science behind this threshold it just looks nice
 			m_sigma = sigma;
 			m_numStars = numStars;
 			m_numDust = numStars / 2;
+			m_numH2 = numStars / 150;
 			m_time = 0;
-			m_dustRenderSize = dustRenderSize;
+			m_timeStep = 0;
 			m_bHasDarkMatter = hasDarkMatter;
 			m_pertN = pertN;
 			m_pertAmp = pertAmp;
-
-			for (int i = 0; i < 100; ++i)
-				m_numberByRad[i] = 0;
 
 			InitStars(m_sigma);
 		}
 
 		public void Reset()
 		{
-			Reset(m_random, m_galaxyRadius, m_coreRadius, m_angleOffset, m_elEx1, m_elEx2, m_sigma, m_velInner, m_velOuter, m_numStars, m_bHasDarkMatter, m_pertN, m_pertAmp, m_dustRenderSize);
+			Reset(m_random, m_galaxyRadius, m_coreRadius, m_angleOffset, m_elEx1, m_elEx2, m_sigma, m_velInner, m_velOuter, m_numStars, m_bHasDarkMatter, m_pertN, m_pertAmp);
 		}
 
 		public void ToggleDarkMatter()
@@ -134,7 +123,7 @@ namespace StarGeneration
 			m_pStars = new StarGenerator[m_numStars];
 			for (int i = 0; i < m_pStars.Length; ++i)
 				m_pStars[i] = new StarGenerator();
-			m_pH2 = new StarGenerator[m_numH2 * 2];
+			m_pH2 = new StarGenerator[m_numH2];
 			for (int i = 0; i < m_pH2.Length; ++i)
 				m_pH2[i] = new StarGenerator();
 
@@ -144,32 +133,28 @@ namespace StarGeneration
 			m_pStars[0].m_a = 0;
 			m_pStars[0].m_b = 0;
 			m_pStars[0].m_angle = 0;
-			m_pStars[0].m_theta = 0;
-			m_pStars[0].m_velTheta = 0;
+			m_pStars[0].m_orbitalAngleDegrees = 0;
 			m_pStars[0].m_center = Vector3.zero;
-			m_pStars[0].m_velTheta = GetOrbitalVelocity((m_pStars[0].m_a + m_pStars[0].m_b)/2.0);
-			m_pStars[0].m_temp = 6000;
+			m_pStars[0].m_orbitalVelocity = GetOrbitalVelocity((m_pStars[0].m_a + m_pStars[0].m_b)/2.0);
+			m_pStars[0].m_temperatureKelvin = 6000;
 
 			// second star is at the edge of the core area
 			m_pStars[1].m_a = m_coreRadius;
 			m_pStars[1].m_b = m_coreRadius * GetEccentricity(m_coreRadius);
 			m_pStars[1].m_angle = GetAngularOffset(m_coreRadius);
-			m_pStars[1].m_theta = 0;
+			m_pStars[1].m_orbitalAngleDegrees = 0;
 			m_pStars[1].m_center = Vector3.zero;
-			m_pStars[1].m_velTheta = GetOrbitalVelocity((m_pStars[1].m_a + m_pStars[1].m_b)/2.0);
-			m_pStars[1].m_temp = 6000;
+			m_pStars[1].m_orbitalVelocity = GetOrbitalVelocity((m_pStars[1].m_a + m_pStars[1].m_b)/2.0);
+			m_pStars[1].m_temperatureKelvin = 6000;
 
 			// third star is at the edge of the disk
 			m_pStars[2].m_a = m_galaxyRadius;
 			m_pStars[2].m_b = m_galaxyRadius * GetEccentricity(m_galaxyRadius);
 			m_pStars[2].m_angle = GetAngularOffset(m_galaxyRadius);
-			m_pStars[2].m_theta = 0;
+			m_pStars[2].m_orbitalAngleDegrees = 0;
 			m_pStars[2].m_center = Vector3.zero;
-			m_pStars[2].m_velTheta = GetOrbitalVelocity((m_pStars[2].m_a + m_pStars[2].m_b)/2.0);
-			m_pStars[2].m_temp = 6000;
-
-			// cell width of the histogram
-			double dh = (double)m_radFarField/100.0;
+			m_pStars[2].m_orbitalVelocity = GetOrbitalVelocity((m_pStars[2].m_a + m_pStars[2].m_b)/2.0);
+			m_pStars[2].m_temperatureKelvin = 6000;
 
 			// Initialize the stars
 			CumulativeDistributionFunction cdf = new CumulativeDistributionFunction();
@@ -178,7 +163,7 @@ namespace StarGeneration
 							   m_galaxyRadius / 3.0,    // disc size
 							   m_coreRadius,            // bulge radius
 							   0,                       // start of intensity curve
-							   m_radFarField,           // end of intensity curve
+							   m_farFieldRadius,        // end of intensity curve
 							   1000);                   // Stars in field
 			for (int i = 3; i<m_numStars; ++i)
 			{
@@ -187,8 +172,8 @@ namespace StarGeneration
 				m_pStars[i].m_a = distanceFromGalacticCentre;
 				m_pStars[i].m_b = distanceFromGalacticCentre * GetEccentricity(distanceFromGalacticCentre);
 				m_pStars[i].m_angle = GetAngularOffset(distanceFromGalacticCentre);
-				m_pStars[i].m_theta = 360.0 * m_random.NextDouble();
-				m_pStars[i].m_velTheta = GetOrbitalVelocity(distanceFromGalacticCentre);
+				m_pStars[i].m_orbitalAngleDegrees = 360.0 * m_random.NextDouble();
+				m_pStars[i].m_orbitalVelocity = GetOrbitalVelocity(distanceFromGalacticCentre);
 				m_pStars[i].m_center = Vector3.zero;
 
 				m_pStars[i].m_name = StarName.Generate(m_random);
@@ -215,43 +200,40 @@ namespace StarGeneration
 				{
 				case SpaceLibrary.Star.Class.O:
 					m_pStars[i].m_radius = Mathf.Lerp(6.6f, 80.0f, (float)m_random.NextDouble());
-					m_pStars[i].m_temp = m_random.NormallyDistributedSingle(8000, 40000, 30000, 60000);
-					m_pStars[i].m_mag = 0.9 + (0.1 * m_random.NextDouble());
+					m_pStars[i].m_temperatureKelvin = m_random.NormallyDistributedSingle(8000, 40000, 30000, 60000);
+					m_pStars[i].m_brightnessMagnitude = 0.9 + (0.1 * m_random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.B:
 					m_pStars[i].m_radius = Mathf.Lerp(1.8f, 6.6f, (float)m_random.NextDouble());
-					m_pStars[i].m_temp = Mathf.Lerp(10000, 30000, (float)m_random.NextDouble());
-					m_pStars[i].m_mag = 0.5 + (0.4 * m_random.NextDouble());
+					m_pStars[i].m_temperatureKelvin = Mathf.Lerp(10000, 30000, (float)m_random.NextDouble());
+					m_pStars[i].m_brightnessMagnitude = 0.5 + (0.4 * m_random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.A:
 					m_pStars[i].m_radius = Mathf.Lerp(1.4f, 1.8f, (float)m_random.NextDouble());
-					m_pStars[i].m_temp = Mathf.Lerp(7500, 10000, (float)m_random.NextDouble());
-					m_pStars[i].m_mag = 0.3 + (0.2 * m_random.NextDouble());
+					m_pStars[i].m_temperatureKelvin = Mathf.Lerp(7500, 10000, (float)m_random.NextDouble());
+					m_pStars[i].m_brightnessMagnitude = 0.3 + (0.2 * m_random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.F:
 					m_pStars[i].m_radius = Mathf.Lerp(1.15f, 1.4f, (float)m_random.NextDouble());
-					m_pStars[i].m_temp = Mathf.Lerp(6000, 7500, (float)m_random.NextDouble());
-					m_pStars[i].m_mag = 0.2 + (0.1 * m_random.NextDouble());
+					m_pStars[i].m_temperatureKelvin = Mathf.Lerp(6000, 7500, (float)m_random.NextDouble());
+					m_pStars[i].m_brightnessMagnitude = 0.2 + (0.1 * m_random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.G:
 					m_pStars[i].m_radius = Mathf.Lerp(0.96f, 1.15f, (float)m_random.NextDouble());
-					m_pStars[i].m_temp = Mathf.Lerp(5200, 6000, (float)m_random.NextDouble());
-					m_pStars[i].m_mag = 0.1 + (0.1 * m_random.NextDouble());
+					m_pStars[i].m_temperatureKelvin = Mathf.Lerp(5200, 6000, (float)m_random.NextDouble());
+					m_pStars[i].m_brightnessMagnitude = 0.1 + (0.1 * m_random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.K:
 					m_pStars[i].m_radius = Mathf.Lerp(0.7f, 0.96f, (float)m_random.NextDouble());
-					m_pStars[i].m_temp = Mathf.Lerp(3700, 5200, (float)m_random.NextDouble());
-					m_pStars[i].m_mag = 0.05 + (0.05 * m_random.NextDouble());
+					m_pStars[i].m_temperatureKelvin = Mathf.Lerp(3700, 5200, (float)m_random.NextDouble());
+					m_pStars[i].m_brightnessMagnitude = 0.05 + (0.05 * m_random.NextDouble());
 					break;
 				case SpaceLibrary.Star.Class.M:
 					m_pStars[i].m_radius = Mathf.Lerp(0.4f, 0.7f, (float)m_random.NextDouble());
-					m_pStars[i].m_temp = Mathf.Lerp(2400, 3700, (float)m_random.NextDouble());
-					m_pStars[i].m_mag = 0.01 + (0.04 * m_random.NextDouble());
+					m_pStars[i].m_temperatureKelvin = Mathf.Lerp(2400, 3700, (float)m_random.NextDouble());
+					m_pStars[i].m_brightnessMagnitude = 0.01 + (0.04 * m_random.NextDouble());
 					break;
 				}
-
-				int idx = (int)Math.Min(1.0/dh * (m_pStars[i].m_a + m_pStars[i].m_b)/2.0, 99.0);
-				m_numberByRad[idx]++;
 			}
 
 			// Initialise Dust
@@ -264,118 +246,56 @@ namespace StarGeneration
 				}
 				else
 				{
-					double x = 2*m_galaxyRadius * m_random.NextDouble() - m_galaxyRadius;
-					double y = 2*m_galaxyRadius * m_random.NextDouble() - m_galaxyRadius;
+					double x = 2 * m_galaxyRadius * m_random.NextDouble() - m_galaxyRadius;
+					double y = 2 * m_galaxyRadius * m_random.NextDouble() - m_galaxyRadius;
 					distanceFromGalacticCentre = Math.Sqrt(x*x+y*y);
 				}
 
 				m_pDust[i].m_a = distanceFromGalacticCentre;
 				m_pDust[i].m_b = distanceFromGalacticCentre * GetEccentricity(distanceFromGalacticCentre);
 				m_pDust[i].m_angle = GetAngularOffset(distanceFromGalacticCentre);
-				m_pDust[i].m_theta = 360.0 * m_random.NextDouble();
-				m_pDust[i].m_velTheta = GetOrbitalVelocity((m_pDust[i].m_a + m_pDust[i].m_b)/2.0);
+				m_pDust[i].m_orbitalAngleDegrees = 360.0 * m_random.NextDouble();
+				m_pDust[i].m_orbitalVelocity = GetOrbitalVelocity((m_pDust[i].m_a + m_pDust[i].m_b)/2.0);
 				m_pDust[i].m_center = Vector3.zero;
 
 				// I want the outer parts to appear blue, the inner parts yellow. I'm imposing
 				// the following temperature distribution (no science here it just looks right)
-				m_pDust[i].m_temp = 5000 + distanceFromGalacticCentre/4.5;
+				m_pDust[i].m_temperatureKelvin = (((distanceFromGalacticCentre / m_farFieldRadius)) * 10000) + 5000;
 
-				m_pDust[i].m_mag = 0.015 + 0.01 * m_random.NextDouble();
-				int idx = (int)Math.Min(1.0/dh * (m_pDust[i].m_a + m_pDust[i].m_b)/2.0, 99.0);
-				m_numberByRad[idx]++;
+				// Brightness magnitude of dust should be low, as it overlays and builds up
+				m_pDust[i].m_brightnessMagnitude = 0.015 + (0.01 * m_random.NextDouble());
 			}
 
-			// Initialise Dust
-			for (int i = 0; i<m_numH2; ++i)
+			// Initialise H-II stellar nurseries
+			for (int i = 0; i < (m_numH2 / 2); ++i)
 			{
-				double x = 2*(m_galaxyRadius) * m_random.NextDouble() - (m_galaxyRadius);
-				double y = 2*(m_galaxyRadius) * m_random.NextDouble() - (m_galaxyRadius);
+				double x = 2 * m_galaxyRadius * m_random.NextDouble() - m_galaxyRadius;
+				double y = 2 * m_galaxyRadius * m_random.NextDouble() - m_galaxyRadius;
 				double distanceFromGalacticCentre = Math.Sqrt(x*x+y*y);
 
-				int k1 = 2*i;
+				int k1 = (2 * i);
 				m_pH2[k1].m_a = distanceFromGalacticCentre;
 				m_pH2[k1].m_b = distanceFromGalacticCentre * GetEccentricity(distanceFromGalacticCentre);
 				m_pH2[k1].m_angle = GetAngularOffset(distanceFromGalacticCentre);
-				m_pH2[k1].m_theta = 360.0 * m_random.NextDouble();
-				m_pH2[k1].m_velTheta = GetOrbitalVelocity((m_pH2[k1].m_a + m_pH2[k1].m_b)/2.0);
+				m_pH2[k1].m_orbitalAngleDegrees = 360.0 * m_random.NextDouble();
+				m_pH2[k1].m_orbitalVelocity = GetOrbitalVelocity((m_pH2[k1].m_a + m_pH2[k1].m_b)/2.0);
 				m_pH2[k1].m_center = Vector3.zero;
-				m_pH2[k1].m_temp = 6000 + (6000 * m_random.NextDouble()) - 3000;
-				m_pH2[k1].m_mag = 0.1 + 0.05 * m_random.NextDouble();
-				int idx = (int)Math.Min(1.0/dh * (m_pH2[k1].m_a + m_pH2[k1].m_b)/2.0, 99.0);
-				m_numberByRad[idx]++;
+				m_pH2[k1].m_temperatureKelvin = 6000 + (6000 * m_random.NextDouble()) - 3000;
+				m_pH2[k1].m_brightnessMagnitude = 0.2 + (0.05 * m_random.NextDouble());
 
-				// Create second point 100 pc away from the first one
+				// Create second point 1000 parsecs away from the first one
 				int dist = 1000;
-				int k2 = 2*i + 1;
+				int k2 = (2 * i) + 1;
 				m_pH2[k2].m_a = distanceFromGalacticCentre + dist;
 				m_pH2[k2].m_b = distanceFromGalacticCentre * GetEccentricity(distanceFromGalacticCentre);
 				m_pH2[k2].m_angle = GetAngularOffset(distanceFromGalacticCentre);
-				m_pH2[k2].m_theta = m_pH2[k1].m_theta;
-				m_pH2[k2].m_velTheta = m_pH2[k1].m_velTheta;
+				m_pH2[k2].m_orbitalAngleDegrees = m_pH2[k1].m_orbitalAngleDegrees;
+				m_pH2[k2].m_orbitalVelocity = m_pH2[k1].m_orbitalVelocity;
 				m_pH2[k2].m_center = m_pH2[k1].m_center;
-				m_pH2[k2].m_temp = m_pH2[k1].m_temp;
-				m_pH2[k2].m_mag = m_pH2[k1].m_mag;
-				idx = (int)Math.Min(1.0/dh * (m_pH2[k2].m_a + m_pH2[k2].m_b)/2.0, 99.0);
-				m_numberByRad[idx]++;
+				m_pH2[k2].m_temperatureKelvin = m_pH2[k1].m_temperatureKelvin;
+				m_pH2[k2].m_brightnessMagnitude = m_pH2[k1].m_brightnessMagnitude;
 			}
 		}
-
-		public void SetSigma(double sigma)
-		{
-			m_sigma = sigma;
-			Reset();
-		}
-
-		public double GetSigma()
-		{
-			return m_sigma;
-		}
-
-		public void SetDustRenderSize(double sz)
-		{
-			m_dustRenderSize = Math.Max(sz, 1.0);
-		}
-
-		public double GetDustRenderSize()
-		{
-			return m_dustRenderSize;
-		}
-
-		public void SetAngularOffset(double offset)
-		{
-			m_angleOffset = offset;
-			Reset();
-		}
-
-		public double GetAngularOffset(double distanceFromGalacticCentre)
-		{
-			return distanceFromGalacticCentre * m_angleOffset;
-		}
-
-		public double GetAngularOffset()
-		{
-			return m_angleOffset;
-		}
-
-		public void SetPertN(int n)
-		{
-			m_pertN = Math.Max(0, n);
-		}
-		public int GetPertN()
-		{
-			return m_pertN;
-		}
-
-		public void SetPertAmp(double amp)
-		{
-			m_pertAmp = Math.Max(0.0, amp);
-		}
-
-		public double GetPertAmp()
-		{
-			return m_pertAmp;
-		}
-
 
 		public StarGenerator[] GetStars()
 		{
@@ -392,13 +312,13 @@ namespace StarGeneration
 			return m_pH2;
 		}
 
-		public void SetRad(double distanceFromGalacticCentre)
+		public void SetGalaxyRadius(double distanceFromGalacticCentre)
 		{
 			m_galaxyRadius = distanceFromGalacticCentre;
 			Reset();
 		}
 
-		public double GetRad()
+		public double GetGalaxyRadius()
 		{
 			return m_galaxyRadius;
 		}
@@ -414,9 +334,15 @@ namespace StarGeneration
 			return m_coreRadius;
 		}
 
+		public void SetFarFieldRad(double distanceFromGalacticCentre)
+		{
+			m_farFieldRadius = distanceFromGalacticCentre;
+			Reset();
+		}
+
 		public double GetFarFieldRad()
 		{
-			return m_radFarField;
+			return m_farFieldRadius;
 		}
 
 		public void SetExInner(double ex)
@@ -439,6 +365,33 @@ namespace StarGeneration
 		public double GetExOuter()
 		{
 			return m_elEx2;
+		}
+
+		public void SetSigma(double sigma)
+		{
+			m_sigma = sigma;
+			Reset();
+		}
+
+		public double GetSigma()
+		{
+			return m_sigma;
+		}
+
+		public void SetAngularOffset(double offset)
+		{
+			m_angleOffset = offset;
+			Reset();
+		}
+
+		public double GetAngularOffset(double distanceFromGalacticCentre)
+		{
+			return distanceFromGalacticCentre * m_angleOffset;
+		}
+
+		public double GetAngularOffset()
+		{
+			return m_angleOffset;
 		}
 
 		// Properties depending on the orbital distance from galactic centre
@@ -470,10 +423,10 @@ namespace StarGeneration
 			{
 				return m_elEx1 + (distanceFromGalacticCentre - m_coreRadius) / (m_galaxyRadius - m_coreRadius) * (m_elEx2-m_elEx1);
 			}
-			else if ((distanceFromGalacticCentre > m_galaxyRadius) && (distanceFromGalacticCentre < m_radFarField))
+			else if ((distanceFromGalacticCentre > m_galaxyRadius) && (distanceFromGalacticCentre < m_farFieldRadius))
 			{
 				// eccentricity is slowly reduced to 1.
-				return m_elEx2 + (distanceFromGalacticCentre - m_galaxyRadius) / (m_radFarField - m_galaxyRadius) * (1-m_elEx2);
+				return m_elEx2 + (distanceFromGalacticCentre - m_galaxyRadius) / (m_farFieldRadius - m_galaxyRadius) * (1-m_elEx2);
 			}
 			else
 			{
@@ -491,54 +444,47 @@ namespace StarGeneration
 			return m_time;
 		}
 
-		public int GetNumStars()
+		public void SetPertN(int n)
 		{
-			return m_numStars;
+			m_pertN = Math.Max(0, n);
+		}
+		public int GetPertN()
+		{
+			return m_pertN;
 		}
 
-		public int GetNumDust()
+		public void SetPertAmp(double amp)
 		{
-			return m_numDust;
+			m_pertAmp = Math.Max(0.0, amp);
 		}
 
-		public int GetNumH2()
+		public double GetPertAmp()
 		{
-			return m_numH2;
+			return m_pertAmp;
 		}
-
 
 		public void SingleTimeStep(double time)
 		{
 			m_timeStep = time;
 			m_time += time;
 
-			Vector2 posOld;
-			for (int i = 0; i<m_numStars; ++i)
+			for (int i = 0; i < m_numStars; ++i)
 			{
-				m_pStars[i].m_theta += (m_pStars[i].m_velTheta * time);
-				posOld = m_pStars[i].m_pos;
-				m_pStars[i].CalcXY(m_pertN, m_pertAmp);
-				m_pStars[i].m_vel = new Vector2(m_pStars[i].m_pos.x - posOld.x, m_pStars[i].m_pos.y - posOld.y);
+				m_pStars[i].m_orbitalAngleDegrees += (m_pStars[i].m_orbitalVelocity * time);
+				m_pStars[i].SetPositionWithPurturbation(m_pertN, m_pertAmp);
 			}
 
-			for (int i = 0; i<m_numDust; ++i)
+			for (int i = 0; i < m_numDust; ++i)
 			{
-				m_pDust[i].m_theta += (m_pDust[i].m_velTheta * time);
-				posOld = m_pDust[i].m_pos;
-				m_pDust[i].CalcXY(m_pertN, m_pertAmp);
+				m_pDust[i].m_orbitalAngleDegrees += (m_pDust[i].m_orbitalVelocity * time);
+				m_pDust[i].SetPositionWithPurturbation(m_pertN, m_pertAmp);
 			}
 
-			for (int i = 0; i<m_numH2*2; ++i)
+			for (int i = 0; i < m_numH2; ++i)
 			{
-				m_pH2[i].m_theta += (m_pH2[i].m_velTheta * time);
-				posOld = m_pDust[i].m_pos;
-				m_pH2[i].CalcXY(m_pertN, m_pertAmp);
+				m_pH2[i].m_orbitalAngleDegrees += (m_pH2[i].m_orbitalVelocity * time);
+				m_pH2[i].SetPositionWithPurturbation(m_pertN, m_pertAmp);
 			}
-		}
-
-		public Vector3 GetStarPos(int idx)
-		{
-			return m_pStars[idx].m_pos;
 		}
 
 	}
