@@ -35,7 +35,7 @@ namespace StarGeneration.Galaxies
             _deviationZ = deviationZ;
         }
 
-        protected internal override IEnumerable<SpaceLibrary.StarSystem> Generate(System.Random random)
+        protected internal override IEnumerable<SpaceLibrary.System> Generate(System.Random random)
         {
             var density = Math.Max(0, random.NormallyDistributedSingle(_densityDeviation, _densityMean));
             var countMax = Math.Max(0, (int)(_size * _size * _size * density));
@@ -50,15 +50,15 @@ namespace StarGeneration.Galaxies
 				float starPositionFractionOfSphereRadius = starPosition.magnitude / _size;
 
 				// Generate a new star system at this position
-				SpaceLibrary.StarSystem starSystem = new SpaceLibrary.StarSystem();
-				starSystem.Position = new SpaceLibrary.GalacticCoordinate(starPosition.x, starPosition.y, starPosition.z);
+				SpaceLibrary.System system = new SpaceLibrary.System();
+				system.Position = new SpaceLibrary.GalacticCoordinate(starPosition.x, starPosition.y, starPosition.z);
 
 				// Generate a random star system name.
-				starSystem.Name = StarName.Generate(random);
+				system.Name = StarName.Generate(random);
 
 				// Generate a single star in this system, with a 0 orbital distance (no binary systems)
 				SpaceLibrary.Star[] stars = new SpaceLibrary.Star[1];
-				starSystem.Stars = stars;
+				system.Stars = stars;
 
 				stars[0] = new SpaceLibrary.Star();
 				stars[0].OrbitalDistance = 0.0f;
@@ -116,9 +116,9 @@ namespace StarGeneration.Galaxies
 
 				// Assign the system name to the star too
 				// TODO: Use classification and temperature to calculate post fix
-				stars[0].Name = starSystem.Name;
+				stars[0].Name = system.Name;
 
-				yield return starSystem;
+				yield return system;
             }
         }
     }

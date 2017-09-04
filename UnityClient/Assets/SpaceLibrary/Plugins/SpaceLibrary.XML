@@ -4,24 +4,49 @@
         <name>SpaceLibrary</name>
     </assembly>
     <members>
-        <member name="T:SpaceLibrary.AsteroidBelt">
+        <member name="T:SpaceLibrary.BeltBodyType">
             <summary>
-            Description of an asteroid belt
+            Type of bodies found in the belt.
             </summary>
         </member>
-        <member name="P:SpaceLibrary.AsteroidBelt.OrbitalDistance">
+        <member name="F:SpaceLibrary.BeltBodyType.Rock">
+            <summary>
+            Rocky, mineral rich bodies, such as asteroids
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.BeltBodyType.Ice">
+            <summary>
+            Icy bodies such as found in the Oord cloud
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.Belt">
+            <summary>
+            Description of a belt
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Belt.OrbitalDistance">
             <summary>
             Orbital distance in astronomical units from the system centre
             </summary>
         </member>
-        <member name="P:SpaceLibrary.AsteroidBelt.Name">
+        <member name="P:SpaceLibrary.Belt.Width">
             <summary>
-            Name of the asteroid belt
+            Width of the belt in astronomical units
             </summary>
         </member>
-        <member name="P:SpaceLibrary.AsteroidBelt.AsteroidCount">
+        <member name="P:SpaceLibrary.Belt.Name">
             <summary>
-            Number of asteroids left in the belt
+            Name of the belt
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Belt.BodyCount">
+            <summary>
+            Number of bodies left in the belt
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Belt.BodyType">
+            <summary>
+            Type of body found in the belt
             </summary>
         </member>
         <member name="T:SpaceLibrary.GalacticCoordinate">
@@ -49,34 +74,34 @@
             Construct a new galactic coordinate from an initially known position
             </summary>
         </member>
-        <member name="T:SpaceLibrary.StarSystem">
+        <member name="T:SpaceLibrary.System">
             <summary>
-            Description of a star system
+            Description of a system of stars, planets and/or asteroid belts
             </summary>
         </member>
-        <member name="P:SpaceLibrary.StarSystem.Position">
+        <member name="P:SpaceLibrary.System.Position">
             <summary>
-            Position of the star system relative to galactic centre
+            Position of the system relative to galactic centre
             </summary>
         </member>
-        <member name="P:SpaceLibrary.StarSystem.Name">
+        <member name="P:SpaceLibrary.System.Name">
             <summary>
-            Name of the star system
+            Name of the system
             </summary>
         </member>
-        <member name="P:SpaceLibrary.StarSystem.Stars">
+        <member name="P:SpaceLibrary.System.Stars">
             <summary>
             The stars present in this system
             </summary>
         </member>
-        <member name="P:SpaceLibrary.StarSystem.Planets">
+        <member name="P:SpaceLibrary.System.Planets">
             <summary>
             The planets present in this system
             </summary>
         </member>
-        <member name="P:SpaceLibrary.StarSystem.AsteroidBelts">
+        <member name="P:SpaceLibrary.System.Belts">
             <summary>
-            The asteroid belts present in this system
+            The belts present in this system
             </summary>
         </member>
         <member name="T:SpaceLibrary.Star">

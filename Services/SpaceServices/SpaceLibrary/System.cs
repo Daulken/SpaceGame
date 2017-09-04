@@ -45,12 +45,12 @@ namespace SpaceLibrary
 	};
 
 	/// <summary>
-	/// Description of a star system
+	/// Description of a system of stars, planets and/or asteroid belts
 	/// </summary>
-	public class StarSystem
+	public class System
     {
 		/// <summary>
-		/// Position of the star system relative to galactic centre
+		/// Position of the system relative to galactic centre
 		/// </summary>
 		public GalacticCoordinate Position
 		{
@@ -58,7 +58,7 @@ namespace SpaceLibrary
 		}
 
 		/// <summary>
-		/// Name of the star system
+		/// Name of the system
 		/// </summary>
 		public string Name
 		{
@@ -82,9 +82,9 @@ namespace SpaceLibrary
 		}
 
 		/// <summary>
-		/// The asteroid belts present in this system
+		/// The belts present in this system
 		/// </summary>
-		public AsteroidBelt[] AsteroidBelts
+		public Belt[] Belts
 		{
 			get; set;
 		}

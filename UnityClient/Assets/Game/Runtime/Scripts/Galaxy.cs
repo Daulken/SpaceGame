@@ -20,10 +20,10 @@ public class Galaxy : MonoBehaviour
 		StarGeneration.Galaxy galaxy = StarGeneration.Galaxy.Generate(new StarGeneration.Galaxies.Spiral(), new System.Random(System.DateTime.Now.Millisecond));
 
 		// Count the stars in the systems
-		SpaceLibrary.StarSystem[] starSystems = galaxy.StarSystems.ToArray();
+		SpaceLibrary.System[] systems = galaxy.Systems.ToArray();
 		int noofStars = 0;
-		foreach (SpaceLibrary.StarSystem starSystem in starSystems)
-			noofStars += starSystem.Stars.Length;
+		foreach (SpaceLibrary.System system in systems)
+			noofStars += system.Stars.Length;
 
 		// Set up a point cloud to render all of the stars
 		m_galaxyMesh = new Mesh();
@@ -37,11 +37,11 @@ public class Galaxy : MonoBehaviour
 		int vertexOffset = 0;
 		int indexOffset = 0;
 
-		foreach (SpaceLibrary.StarSystem starSystem in starSystems)
+		foreach (SpaceLibrary.System system in systems)
 		{
-			Vector3 systemPosition = starSystem.Position.ToVector3();
+			Vector3 systemPosition = system.Position.ToVector3();
 
-			foreach (SpaceLibrary.Star star in starSystem.Stars)
+			foreach (SpaceLibrary.Star star in system.Stars)
 			{
 				Vector3 starColourVector = star.TemperatureColour();
 				Color colour = new Color(starColourVector.x, starColourVector.y, starColourVector.z);

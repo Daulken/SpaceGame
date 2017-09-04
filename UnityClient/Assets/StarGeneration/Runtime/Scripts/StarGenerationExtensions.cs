@@ -6,7 +6,7 @@ namespace StarGeneration
 {
     static class StarGenerationExtensions
     {
-		public static SpaceLibrary.StarSystem Offset(this SpaceLibrary.StarSystem s, Vector3 offset)
+		public static SpaceLibrary.System Offset(this SpaceLibrary.System s, Vector3 offset)
         {
 			SpaceLibrary.GalacticCoordinate newPosition = s.Position;
 			newPosition.X += offset.x;
@@ -15,7 +15,7 @@ namespace StarGeneration
             return s;
         }
 
-        public static SpaceLibrary.StarSystem Scale(this SpaceLibrary.StarSystem s, Vector3 scale)
+        public static SpaceLibrary.System Scale(this SpaceLibrary.System s, Vector3 scale)
         {
 			SpaceLibrary.GalacticCoordinate newPosition = s.Position;
 			newPosition.X *= scale.x;
@@ -24,7 +24,7 @@ namespace StarGeneration
 			return s;
         }
 
-        public static SpaceLibrary.StarSystem Swirl(this SpaceLibrary.StarSystem s, Vector3 axis, float amount)
+        public static SpaceLibrary.System Swirl(this SpaceLibrary.System s, Vector3 axis, float amount)
         {
 			Vector3 newPosition = new Vector3((float)s.Position.X, (float)s.Position.Y, (float)s.Position.Z);
 			var d = newPosition.magnitude;
