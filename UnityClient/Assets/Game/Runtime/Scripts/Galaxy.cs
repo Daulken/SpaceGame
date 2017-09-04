@@ -43,8 +43,8 @@ public class Galaxy : MonoBehaviour
 
 			foreach (SpaceLibrary.Star star in starSystem.Stars)
 			{
-				Vector3 tempColour = star.TemperatureColour();
-				Color colour = new Color(tempColour.x, tempColour.y, tempColour.z);
+				Vector3 starColourVector = star.TemperatureColour();
+				Color colour = new Color(starColourVector.x, starColourVector.y, starColourVector.z);
 				float radius = (float)star.Radius * 6.957f;
 				Vector3 position = systemPosition;		// Ignoring orbital radius for now
 

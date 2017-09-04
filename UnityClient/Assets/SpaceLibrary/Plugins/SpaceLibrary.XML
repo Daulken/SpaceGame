@@ -1,0 +1,439 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SpaceLibrary</name>
+    </assembly>
+    <members>
+        <member name="T:SpaceLibrary.AsteroidBelt">
+            <summary>
+            Description of an asteroid belt
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.AsteroidBelt.OrbitalDistance">
+            <summary>
+            Orbital distance in astronomical units from the system centre
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.AsteroidBelt.Name">
+            <summary>
+            Name of the asteroid belt
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.AsteroidBelt.AsteroidCount">
+            <summary>
+            Number of asteroids left in the belt
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.GalacticCoordinate">
+            <summary>
+            Coordinates in light years from galactic centre
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.GalacticCoordinate.X">
+            <summary>
+            X position
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.GalacticCoordinate.Y">
+            <summary>
+            Y position
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.GalacticCoordinate.Z">
+            <summary>
+            Z position
+            </summary>
+        </member>
+        <member name="M:SpaceLibrary.GalacticCoordinate.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Construct a new galactic coordinate from an initially known position
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.StarSystem">
+            <summary>
+            Description of a star system
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.StarSystem.Position">
+            <summary>
+            Position of the star system relative to galactic centre
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.StarSystem.Name">
+            <summary>
+            Name of the star system
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.StarSystem.Stars">
+            <summary>
+            The stars present in this system
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.StarSystem.Planets">
+            <summary>
+            The planets present in this system
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.StarSystem.AsteroidBelts">
+            <summary>
+            The asteroid belts present in this system
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.Star">
+            <summary>
+            Description of a star
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.Star.Class">
+            <summary>
+            Star classification type.
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Star.Class.O">
+            <summary>
+            Class O Star
+            <para>Effective Temperature: ≥ 30,000 K</para>
+            <para>Vega-relative Colour Label: Blue</para>
+            <para>Chromaticity: Blue</para>
+            <para>Main-sequence Mass: ≥ 16 M☉</para>
+            <para>Main-sequence Radius: ≥ 6.6 R☉</para>
+            <para>Main-sequence Luminosity: ≥ 30,000 L☉</para>
+            <para>Hydrogen Lines: Weak</para>
+            <para>Fraction of Main Sequence Stars In This Class: ~0.00003%</para>
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Star.Class.B">
+            <summary>
+            Class B Star
+            <para>Effective Temperature: 10,000 – 30,000 K</para>
+            <para>Vega-relative Colour Label: Blue White</para>
+            <para>Chromaticity: Deep Blue White</para>
+            <para>Main-sequence Mass: 2.1 – 16 M☉</para>
+            <para>Main-sequence Radius: 1.8 – 6.6 R☉</para>
+            <para>Main-sequence Luminosity: 25 – 30,000 L☉</para>
+            <para>Hydrogen Lines: Medium</para>
+            <para>Fraction of Main Sequence Stars In This Class: 0.13%</para>
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Star.Class.A">
+            <summary>
+            Class A Star
+            <para>Effective Temperature: 7,500 – 10,000 K</para>
+            <para>Vega-relative Colour Label: White</para>
+            <para>Chromaticity: Blue White</para>
+            <para>Main-sequence Mass: 1.4 – 2.1 M☉</para>
+            <para>Main-sequence Radius: 1.4 – 1.8 R☉</para>
+            <para>Main-sequence Luminosity: 5 – 25 L☉</para>
+            <para>Hydrogen Lines: Strong</para>
+            <para>Fraction of Main Sequence Stars In This Class: 0.6%</para>
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Star.Class.F">
+            <summary>
+            Class F Star
+            <para>Effective Temperature: 6,000 – 7,500 K</para>
+            <para>Vega-relative Colour Label: Yellow White</para>
+            <para>Chromaticity: White</para>
+            <para>Main-sequence Mass: 1.04 – 1.4 M☉</para>
+            <para>Main-sequence Radius: 1.15 – 1.4 R☉</para>
+            <para>Main-sequence Luminosity: 1.5 – 5 L☉</para>
+            <para>Hydrogen Lines: Medium</para>
+            <para>Fraction of Main Sequence Stars In This Class: 3%</para>
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Star.Class.G">
+            <summary>
+            Class G Star
+            <para>Effective Temperature: 5,200 – 6,000 K</para>
+            <para>Vega-relative Colour Label: Yellow</para>
+            <para>Chromaticity: Yellowish White</para>
+            <para>Main-sequence Mass: 0.8 – 1.04 M☉</para>
+            <para>Main-sequence Radius: 0.96 – 1.15 R☉</para>
+            <para>Main-sequence Luminosity: 0.6 – 1.5 L☉</para>
+            <para>Hydrogen Lines: Weak</para>
+            <para>Fraction of Main Sequence Stars In This Class: 7.6%</para>
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Star.Class.K">
+            <summary>
+            Class K Star
+            <para>Effective Temperature: 3,700 – 5,200 K</para>
+            <para>Vega-relative Colour Label: Orange</para>
+            <para>Chromaticity: Pale Yellow Orange</para>
+            <para>Main-sequence Mass: 0.45 – 0.8 M☉</para>
+            <para>Main-sequence Radius: 0.7 – 0.96 R☉</para>
+            <para>Main-sequence Luminosity: 0.08 – 0.6 L☉</para>
+            <para>Hydrogen Lines: Very Weak</para>
+            <para>Fraction of Main Sequence Stars In This Class: 12.1%</para>
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Star.Class.M">
+            <summary>
+            Class M Star
+            <para>Effective Temperature: 2,400 – 3,700 K</para>
+            <para>Vega-relative Colour Label: Red</para>
+            <para>Chromaticity: Light Orange Red</para>
+            <para>Main-sequence Mass: 0.08 – 0.45 M☉</para>
+            <para>Main-sequence Radius: ≤ 0.7 R☉</para>
+            <para>Main-sequence Luminosity: ≤ 0.08 L☉</para>
+            <para>Hydrogen Lines: Very Weak</para>
+            <para>Fraction of Main Sequence Stars In This Class: 76.45%</para>
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Star.OrbitalDistance">
+            <summary>
+            Orbital distance in astronomical units from the system centre
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Star.Name">
+            <summary>
+            Name of the star
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Star.Radius">
+            <summary>
+            Radius in solar radii (1 R☉ = 6.957 * 10^5 km)
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Star.Temperature">
+            <summary>
+            Temperature of the star in degrees Kelvin
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Star.Classification">
+            <summary>
+            Classification of the star type
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.Planet">
+            <summary>
+            Description of a planet
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Planet.OrbitalDistance">
+            <summary>
+            Orbital distance in astronomical units from the system centre
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Planet.Name">
+            <summary>
+            Name of the planet
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Planet.Radius">
+            <summary>
+            Radius in kilometers
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Planet.PlotCount">
+            <summary>
+            Number of available plots to purchase
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Planet.PlotsAvailable">
+            <summary>
+            Number of plots left to purchase
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.Cargo">
+            <summary>
+            Description of a cargo
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Cargo.CargoMaterial">
+            <summary>
+            The material that the cargo is made of
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Cargo.CargoValue">
+            <summary>
+            The value of the cargo
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.Material">
+            <summary>
+            Description of a cargo material
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Metal1">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Metal2">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Metal3">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Metal4">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Metal5">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Liquid1">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Liquid2">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Liquid3">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Liquid4">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Liquid5">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Gas1">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Gas2">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Gas3">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Gas4">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="F:SpaceLibrary.Material.Gas5">
+            <summary>
+            TO BE NAMED
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.Player">
+            <summary>
+            Description of a player
+            </summary>
+        </member>
+        <member name="M:SpaceLibrary.Player.PlayerWrapper">
+            <summary>
+            Wrapper for a player that allows it to be serialised and used as a JSON blob in a web service communication
+            </summary>
+        </member>
+        <member name="M:SpaceLibrary.Player.#ctor">
+            <summary>
+            Default constructor for a new player
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Player.PlayerId">
+            <summary>
+            The unique ID of the player for database lookups
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Player.PlayerName">
+            <summary>
+            The name of the player
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Player.CreditBalance">
+            <summary>
+            The current monetary balance the player has
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Player.MaxCrew">
+            <summary>
+            The maximum number of crew the player can use
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Player.AvailableCrew">
+            <summary>
+            The number of crew the player owns
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Player.ShipDetails">
+            <summary>
+            The ship that the player owns
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.ServiceWrapper">
+            <summary>
+            Wrapper for a JSON response in a web service communication
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.ServiceWrapper.ResponseSuccessful">
+            <summary>
+            Whether the web service call was successful or not
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.ServiceWrapper.ResponseCode">
+            <summary>
+            If the call failed, this is the error code returned
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.ServiceWrapper.ResponseMessage">
+            <summary>
+            If the call failed, this is a description of the error (not localised)
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.ServiceWrapper.ReturnedDataType">
+            <summary>
+            If the call succeeded, this is the serialised type returned in the JSON response
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.ServiceWrapper.ReturnedDataTypeVersion">
+            <summary>
+            If the call succeeded, this is the version of the serialised type returned in the JSON response
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.ServiceWrapper.ReturnedJsonData">
+            <summary>
+            If the call succeeded, this is a serialised JSON response containing relevant returned data
+            </summary>
+        </member>
+        <member name="T:SpaceLibrary.Ship">
+            <summary>
+            Description of a ship
+            </summary>
+        </member>
+        <member name="M:SpaceLibrary.Ship.#ctor">
+            <summary>
+            Default constructor for a new ship
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Ship.ShipName">
+            <summary>
+            The name of the ship
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Ship.CargoModules">
+            <summary>
+            The number of cargo modules available to carry things in
+            </summary>
+        </member>
+        <member name="P:SpaceLibrary.Ship.CargoContents">
+            <summary>
+            The currently carried cargo
+            </summary>
+        </member>
+    </members>
+</doc>

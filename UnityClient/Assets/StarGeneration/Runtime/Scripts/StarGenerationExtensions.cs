@@ -36,6 +36,9 @@ namespace StarGeneration
 
 		// -----------------------------------------------------------
 
+		/// <summary>
+		/// Converts the galactic coordinate to a UnityEngine.Vector3, for ease of use within Unity
+		/// </summary>
 		public static Vector3 ToVector3(this SpaceLibrary.GalacticCoordinate coord)
 		{
 			return new Vector3((float)coord.X, (float)coord.Y, (float)coord.Z);
@@ -43,6 +46,9 @@ namespace StarGeneration
 
 		// -----------------------------------------------------------
 
+		/// <summary>
+		/// The temperature of a star converted to the sRGB colour of light that this star would emit
+		/// </summary>
 		public static Vector3 TemperatureColour(this SpaceLibrary.Star s)
 		{
 			var srgb = new BlackBodySpectrum(s.Temperature).ToSRGB();

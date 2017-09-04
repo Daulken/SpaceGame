@@ -9,19 +9,33 @@ namespace SpaceLibrary
 	/// </summary>
 	public class GalacticCoordinate
 	{
+		/// <summary>
+		/// X position
+		/// </summary>
 		public double X
 		{
 			get; set;
 		}
+
+		/// <summary>
+		/// Y position
+		/// </summary>
 		public double Y
 		{
 			get; set;
 		}
+
+		/// <summary>
+		/// Z position
+		/// </summary>
 		public double Z
 		{
 			get; set;
 		}
 
+		/// <summary>
+		/// Construct a new galactic coordinate from an initially known position
+		/// </summary>
 		public GalacticCoordinate(double x, double y, double z)
 		{
 			X = x;
@@ -30,6 +44,9 @@ namespace SpaceLibrary
 		}
 	};
 
+	/// <summary>
+	/// Description of a star system
+	/// </summary>
 	public class StarSystem
     {
 		/// <summary>

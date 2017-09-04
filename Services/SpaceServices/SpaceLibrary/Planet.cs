@@ -4,7 +4,10 @@ using System.Text;
 
 namespace SpaceLibrary
 {
-    public class Planet
+	/// <summary>
+	/// Description of a planet
+	/// </summary>
+	public class Planet
     {
 		/// <summary>
 		/// Orbital distance in astronomical units from the system centre

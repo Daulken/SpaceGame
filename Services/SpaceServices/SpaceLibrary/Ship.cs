@@ -4,9 +4,15 @@ using System.Text;
 
 namespace SpaceLibrary
 {
-    public class Ship
+	/// <summary>
+	/// Description of a ship
+	/// </summary>
+	public class Ship
     {
-        public Ship()
+		/// <summary>
+		/// Default constructor for a new ship
+		/// </summary>
+		public Ship()
         {
 #if DEBUG
             ShipName = "Lollypop";
@@ -16,8 +22,29 @@ namespace SpaceLibrary
             CargoContents.Add(new SpaceLibrary.Cargo() { CargoMaterial = Material.Liquid2, CargoValue = 10 });
 #endif
         }
-        public string ShipName { get; set; }
-        public int CargoModules { get; set; }
-        public List<Cargo> CargoContents { get; set; }
+
+		/// <summary>
+		/// The name of the ship
+		/// </summary>
+		public string ShipName
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// The number of cargo modules available to carry things in
+		/// </summary>
+		public int CargoModules
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// The currently carried cargo
+		/// </summary>
+		public List<Cargo> CargoContents
+		{
+			get; set;
+		}
     }
 }

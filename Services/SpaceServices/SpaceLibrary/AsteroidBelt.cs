@@ -4,7 +4,10 @@ using System.Text;
 
 namespace SpaceLibrary
 {
-    public class AsteroidBelt
+	/// <summary>
+	/// Description of an asteroid belt
+	/// </summary>
+	public class AsteroidBelt
     {
 		/// <summary>
 		/// Orbital distance in astronomical units from the system centre

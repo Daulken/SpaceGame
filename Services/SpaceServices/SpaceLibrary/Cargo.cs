@@ -4,28 +4,106 @@ using System.Text;
 
 namespace SpaceLibrary
 {
-    public class Cargo
+	/// <summary>
+	/// Description of a cargo
+	/// </summary>
+	public class Cargo
     {
-        public Material CargoMaterial { get; set; }
-        public double CargoValue { get; set; }
+		/// <summary>
+		/// The material that the cargo is made of
+		/// </summary>
+		public Material CargoMaterial
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// The value of the cargo
+		/// </summary>
+		public double CargoValue
+		{
+			get; set;
+		}
     }
 
-    public enum Material
+	/// <summary>
+	/// Description of a cargo material
+	/// </summary>
+	public enum Material
     {
-        Metal1,
-        Metal2, 
-        Metal3,
-        Metal4,
-        Metal5,
-        Liquid1,
-        Liquid2,
-        Liquid3,
-        Liquid4,
-        Liquid5,
-        Gas1,
-        Gas2,
-        Gas3,
-        Gas4,
-        Gas5
-    }
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Metal1,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Metal2,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Metal3,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Metal4,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Metal5,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Liquid1,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Liquid2,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Liquid3,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Liquid4,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Liquid5,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Gas1,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Gas2,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Gas3,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Gas4,
+
+		/// <summary>
+		/// TO BE NAMED
+		/// </summary>
+		Gas5
+	}
 }
