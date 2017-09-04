@@ -114,5 +114,6 @@ public class MarketUILayout : MonoBehaviour
 
 	public void BuyClicked()
 	{
+		RefreshRows();
 	}
 }
