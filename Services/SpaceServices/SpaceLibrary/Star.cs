@@ -5,7 +5,10 @@ using System.Text;
 namespace SpaceLibrary
 {
 	/// <summary>
-	/// Description of a star
+	/// Description of a star.
+	/// <para>Note that while luminosity is not included, it can be calculated from its radius and temperature: L = 4π R^2 σ T^4.
+	/// The constant, σ, is the Stefan-Boltzman radiation constant and it has a value of σ = 5.67 x 10^-5 ergs/(cm^2 sec deg^4).
+	/// See https://spacemath.gsfc.nasa.gov/weekly/5Page44.pdf for details.</para>
 	/// </summary>
 	public class Star
     {
