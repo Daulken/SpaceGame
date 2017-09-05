@@ -102,13 +102,13 @@ public static class WebManager
 		HTTP_NetworkReadTimeoutError = 598,
 		HTTP_NetworkConnectTimeoutError = 599,
 
-		// 100xx Game Connection Errors
-		Game_InvalidResponse = 10000,
-		Game_InvalidCredentials = 10001,
-		Game_InvalidGameVersion = 10002,
+		// 10xx Game Data Errors
+		Game_PlayerNotFound = 1000,
 
-		// 101xx Game Data Errors
-		Game_PlayerNotFound = 10100,
+		// 11xx Game Connection Errors
+		Game_InvalidResponse = 1100,
+		Game_InvalidCredentials = 1101,
+		Game_InvalidGameVersion = 1102,
 	};
 
 
@@ -257,12 +257,14 @@ public static class WebManager
 				{
 					m_errorCode = (ErrorCode)response.ResponseCode;
 					m_errorString = response.ResponseMessage;
+					m_valid = false;
 				}
 			}
 			else
 			{
 				m_errorCode = ErrorCode.Game_InvalidResponse;
 				m_errorString = string.Format("Response is not a valid ServiceWrapper: {0}", responseText);
+				m_valid = false;
 			}
 		}
 
@@ -299,12 +301,12 @@ public static class WebManager
 		WebCommunicator.Instance.StartCoroutine(WebCommunicator.Instance.RequestLogInInternal(username, password, response));
 	}
 
-	// Query whether currently logged in
-	public static bool LoggedIn
+	// Query the currently logged in player ID
+	public static int LoggedInPlayerID
 	{
 		get
 		{
-			return WebCommunicator.Instance.LoggedIn;
+			return WebCommunicator.Instance.LoggedInPlayerID;
 		}
 	}
 
@@ -369,12 +371,12 @@ internal class WebCommunicator : Singleton<WebCommunicator>
 
 	private Dictionary<string, string> m_headers = new Dictionary<string, string>();
 
-	private bool m_loggedIn = false;
-	public bool LoggedIn
+	private int m_loggedInPlayerID = -1;
+	public int LoggedInPlayerID
 	{
 		get
 		{
-			return m_loggedIn;
+			return m_loggedInPlayerID;
 		}
 	}
 
@@ -385,6 +387,10 @@ internal class WebCommunicator : Singleton<WebCommunicator>
 			get; set;
 		}
 		public int Version
+		{
+			get; set;
+		}
+		public int PlayerID
 		{
 			get; set;
 		}
@@ -452,10 +458,12 @@ internal class WebCommunicator : Singleton<WebCommunicator>
 				// Add authentication token for all other queries
 				AddHeaderInternal("X-RWPVT", loginData.AuthToken);
 
-				// Set logged in
-				m_loggedIn = true;
-			}
+				// Set logged in player ID
+				m_loggedInPlayerID = loginData.PlayerID;
 
+				// Response with success
+				response(new WebManager.WebResponse(internalResponse.ResponseHeaders));
+			}
 		}
 	}
 

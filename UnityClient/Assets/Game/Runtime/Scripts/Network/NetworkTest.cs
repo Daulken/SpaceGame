@@ -1,85 +1,75 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using Newtonsoft.Json;
 
 
-[AddComponentMenu("SPACEJAM/NetworkTest")]
+[AddComponentMenu("SPACEJAM/Communication/NetworkTest")]
 public class NetworkTest : MonoBehaviour
 {
-	[LocalizationKey]
-	public string m_stringID;
-
-	public enum BitMasks
+	private enum GameState
 	{
-		A = 0x01,
-		B = 0x02,
-		C = 0x04,
-		D = 0x08
+		LoginScreen,
+		LoggingIn,
+		LoggedIn,
+		FetchingPlayer,
+		Running,
 	};
 
-	[BitMask(typeof(BitMasks))]
-	public BitMasks m_bitfield = BitMasks.A | BitMasks.C;
+	private GameState m_gameState = GameState.LoginScreen;
 
 	// Use this for initialization
-	void Start()
+	protected void Start()
 	{
-/*
-		WebManager.LogIn("chris", "flibble",
-				(WebManager.WebResponse response) =>
+		// Log in to the database
+		m_gameState = GameState.LoggingIn;
+		DatabaseAccess.Login("chris", "flibble", (loginSuccess, loginError) =>
 				{
-					if (!response.IsValid)
+					if (loginSuccess)
 					{
-						// Log this error. Should be Game_InvalidCredentials if there wasn't an HTTP error
-						string localisedErrorDesc = Localization.Instance.Localize("WEBERROR_" + response.ErrorCode.ToString().ToUpper());
-						DebugHelpers.LogError("Login error: {0} ({1}) - {2}", response.ErrorCode, localisedErrorDesc, response.ErrorDescription);
-					}
-				}
-			);
-*/
-
-		// Request data for a player
-		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/GetPlayer", new Dictionary<string, string>() { { "PlayerId", "1" } }, null,
-				(WebManager.TextWebResponse getResponse) =>
-				{
-					if (getResponse.IsValid)
-					{
-						SpaceLibrary.Player player = JsonConvert.DeserializeObject<SpaceLibrary.Player>(getResponse.ResponseText);
-						DebugHelpers.Log("Player={0}", player.ToString());
-
-						// Increase the max crew count
-						player.MaxCrew += 1;
-
-						// Re-serialise the player
-						string newPlayerData = JsonConvert.SerializeObject(player);
-
-						// Save the player data
-						WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/SavePlayer", new Dictionary<string, string>() { { "PlayerId", "1" }, { "PlayerData", newPlayerData } }, null,
-								(WebManager.TextWebResponse saveResponse) =>
-								{
-									if (saveResponse.IsValid)
-									{
-										DebugHelpers.Log("Player saved (Response=\"{0}\")", saveResponse.ResponseText);
-									}
-									else
-									{
-										// Log this error
-										string localisedErrorDesc = Localization.Instance.Localize("WEBERROR_" + saveResponse.ErrorCode.ToString().ToUpper());
-										DebugHelpers.LogError("SavePlayer error: {0} ({1}) - {2}", saveResponse.ErrorCode, localisedErrorDesc, saveResponse.ErrorDescription);
-									}
-								}
-							);
-
+						DebugHelpers.Log("Logged in as player {0}", WebManager.LoggedInPlayerID);
 					}
 					else
 					{
-						// Log this error
-						string localisedErrorDesc = Localization.Instance.Localize("WEBERROR_" + getResponse.ErrorCode.ToString().ToUpper());
-						DebugHelpers.LogError("GetPlayer error: {0} ({1}) - {2}", getResponse.ErrorCode, localisedErrorDesc, getResponse.ErrorDescription);
+						DebugHelpers.LogError("Login failed: {0}", loginError);
 					}
+
+					m_gameState = GameState.LoggedIn;
 				}
 			);
 	}
 
+	protected void Update()
+	{
+		if (m_gameState == GameState.LoggedIn)
+		{
+			// Request data for the player
+			m_gameState = GameState.FetchingPlayer;
+			DatabaseAccess.GetPlayer((getSuccess, getError, player) =>
+					{
+						if (getSuccess)
+						{
+							DebugHelpers.Log("Player Fetched");
+							m_gameState = GameState.Running;
+
+							// Increase the max crew count
+							player.MaxCrew += 1;
+
+							DatabaseAccess.SavePlayer(player, (saveSuccess, saveError) =>
+									{
+										if (saveSuccess)
+											DebugHelpers.Log("Player saved");
+										else
+											DebugHelpers.LogError("SavePlayer failed: {0}", saveError);
+									}
+								);
+						}
+						else
+						{
+							DebugHelpers.LogError("GetPlayer failed: {0}", getError);
+						}
+					}
+				);
+		}
+	}
 }
