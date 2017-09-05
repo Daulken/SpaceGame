@@ -7,26 +7,17 @@ namespace StarGeneration
 {
 	public class StarGenerator
 	{
-		public double m_orbitalAngleDegrees;		// Angle in degrees around the orbital ellipse
-		public double m_orbitalVelocity;			// Angular velocity (degrees per year)
-		public double m_angle;						// Schräglage der Ellipse
-		public double m_a;							// kleine halbachse
-		public double m_b;							// große halbachse
-		public double m_temperatureKelvin;			// Star temperature in Kelvin
-		public double m_brightnessMagnitude;		// Magitude of brightness (0..1) to muliply colour by;
-		public Vector3 m_center;					// Center of the elliptical orbit
-		public Vector3 m_position;                  // Current position in Cartesian coordinates
-		public string m_name;                       // Name of the star
-		public SpaceLibrary.Star.Class m_class;     // Class of star
-		public double m_radius;                     // Radius of the star
-
-		public StarGenerator()
-		{
-			m_orbitalAngleDegrees = 0;
-			m_a = 0;
-			m_b = 0;
-			m_center = Vector3.zero;
-		}
+		public string m_name;							// Name of the star
+		public Vector3 m_position = Vector3.zero;       // Current position in Cartesian coordinates
+		public SpaceLibrary.Star.Class m_class;			// Class of star
+		public double m_radius = 0;                     // Radius of the star
+		public double m_orbitalAngleDegrees = 0;		// Angle in degrees around the orbital ellipse
+		public double m_orbitalVelocity = 0;			// Angular velocity (degrees per year)
+		public double m_obliqueEllipticalAngle = 0;		// Oblique position of the ellipse
+		public double m_largeEllipticalHalfAxis = 0;    // Half the length of the largest diameter of an ellipse
+		public double m_smallEllipticalHalfAxis = 0;	// Half the length of the diameter at a right-angle to the large half-axis
+		public double m_temperatureKelvin = 0;			// Star temperature in Kelvin
+		public double m_brightnessMagnitude = 0;		// Magitude of brightness (0..1) to muliply colour by;
 
 		/// <summary>
 		/// The temperature of a star converted to the sRGB colour of light that this star would emit
@@ -39,26 +30,26 @@ namespace StarGeneration
 
 		public void SetPositionWithPurturbation(int pertN, double pertAmp)
 		{
-			double beta = -m_angle;
-			double alpha = m_orbitalAngleDegrees * (Math.PI / 180);
+			double orbitalAngleRadians = m_orbitalAngleDegrees * (Math.PI / 180);
+			double inverseEllipticalAngle = -m_obliqueEllipticalAngle;
 
-			// temporaries to save cpu time
-			double cosalpha = Math.Cos(alpha);
-			double sinalpha = Math.Sin(alpha);
-			double cosbeta = Math.Cos(beta);
-			double sinbeta = Math.Sin(beta);
+			// Temporaries to save CPU time
+			double cosOrbitalAngleRadians = Math.Cos(orbitalAngleRadians);
+			double sinOrbitalAngleRadians = Math.Sin(orbitalAngleRadians);
+			double cosInverseEllipticalAngle = Math.Cos(inverseEllipticalAngle);
+			double sinInverseEllipticalAngle = Math.Sin(inverseEllipticalAngle);
 
 			m_position = new Vector3(
-							(float)(m_center.x + (m_a * cosalpha * cosbeta - m_b * sinalpha * sinbeta)),
-							m_center.y,
-							(float)(m_center.z + (m_a * cosalpha * sinbeta + m_b * sinalpha * cosbeta))
+							(float)(((m_smallEllipticalHalfAxis * cosOrbitalAngleRadians * cosInverseEllipticalAngle) - (m_largeEllipticalHalfAxis * sinOrbitalAngleRadians * sinInverseEllipticalAngle))),
+							0.0f,
+							(float)(((m_smallEllipticalHalfAxis * cosOrbitalAngleRadians * sinInverseEllipticalAngle) + (m_largeEllipticalHalfAxis * sinOrbitalAngleRadians * cosInverseEllipticalAngle)))
 							);
 
 			// Add small perturbations to create more spiral arms
-			if (pertAmp>0 && pertN>0)
+			if ((pertAmp > 0) && (pertN > 0))
 			{
-				m_position.x += (float)((m_a / pertAmp) * Math.Sin(alpha * 2 * pertN));
-				m_position.z += (float)((m_a / pertAmp) * Math.Cos(alpha * 2 * pertN));
+				m_position.x += (float)((m_smallEllipticalHalfAxis / pertAmp) * Math.Sin(orbitalAngleRadians * 2 * pertN));
+				m_position.z += (float)((m_smallEllipticalHalfAxis / pertAmp) * Math.Cos(orbitalAngleRadians * 2 * pertN));
 			}
 		}
 

@@ -52,28 +52,20 @@ public class Galaxy : MonoBehaviour
 	protected void Start()
 	{
 		// Generate a galaxy
-		m_galaxy = new StarGeneration.GalaxyGenerator();
-		m_galaxy.Reset(
+		m_galaxy = new StarGeneration.GalaxyGenerator(
 				new System.Random(System.DateTime.Now.Millisecond),
 				13000,      // Radius of the galaxy
 				4000,       // Radius of the core
 				0.0004,     // Angular offset of the density wave per parsec of radius
 				0.85,       // Eccentricity at the edge of the core
 				0.95,       // Eccentricity at the edge of the disk
-				0.5,        // Sigma (Distribution of stars)
-				200,        // Orbital velocity at the edge of the core
-				300,        // Orbital velocity at the edge of the disk
-				90000,      // Total number of stars
-				true,       // Has dark matter
-				2,          // Perturbations per full ellipse
-				40         // Amplitude damping factor of perturbation
+				80000,      // Total number of stars
+				2,          // Perturbations per full ellipse (number of spiral arms / 2)
+				80          // Amplitude damping factor of perturbation (width of arms: smaller = tight, larger = spread)
 			);
 
 
-		double rangeOfInterest = m_galaxy.GetFarFieldRad() * 1.3;
-
-		// Time in years
-		m_galaxy.SingleTimeStep(1);
+		//double rangeOfInterest = m_galaxy.GetFarFieldRadius() * 1.3;
 
 		// ---------------------------------------------------------------------
 
@@ -122,14 +114,15 @@ public class Galaxy : MonoBehaviour
 			Vector3 p1 = h2s[k1].m_position;
 			Vector3 p2 = h2s[k2].m_position;
 
+			// Calculate the size of the nursery, and ignore those below a certain size
 			double dst = Mathf.Sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
 			double size = ((1000-dst) / 10) - 50;
 			if (size < 1)
 				continue;
+			float radius = (float)(size * 2 * ms_sizeMultiplier);
 
 			Vector3 h2ColourVector = h2s[k1].TemperatureColour() * (float)h2s[h2Index].m_brightnessMagnitude;
-			Color colour = new Color((float)(h2ColourVector.x * 2), (float)(h2ColourVector.y * 0.5), (float)(h2ColourVector.z * 0.5)) * 2;
-			float radius = (float)(size * 2 * ms_sizeMultiplier);
+			Color colour = new Color((float)(h2ColourVector.x * 2), (float)(h2ColourVector.y * 0.5), (float)(h2ColourVector.z * 0.5));
 
 			if (!h2PointCloud.m_pointMesh.CanAddPoint())
 			{
