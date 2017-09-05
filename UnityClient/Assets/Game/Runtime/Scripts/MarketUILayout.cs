@@ -5,6 +5,7 @@ using UnityEngine;
 [AddComponentMenu("SPACEJAM/UI/MarketUILayout")]
 public class MarketUILayout : MonoBehaviour
 {
+	public SharedUILayout		m_sharedLayout;
 	public GameObject			m_rowContainer;
 	public GameObject			m_templateRow;
 	public GameObject			m_buyButton;
