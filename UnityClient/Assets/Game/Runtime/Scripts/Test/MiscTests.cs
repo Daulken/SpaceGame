@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[AddComponentMenu("SPACEJAM/MiscTests")]
+[AddComponentMenu("SPACEJAM/Tests/MiscTests")]
 public class MiscTests : MonoBehaviour
 {
 	[LocalizationKey]
