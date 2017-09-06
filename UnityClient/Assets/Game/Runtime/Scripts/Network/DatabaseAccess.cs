@@ -124,4 +124,76 @@ public static class DatabaseAccess
 				}
 			);
 	}
+
+	/// <summary>
+	/// Fetch the current market orders for a star
+	/// </summary>
+	/// <param name="result">Action containing whether the fetch was successful, a localised error message if not, and the fetched list of market orders if valid</param>
+	public static void GetMarketOrders(int starId, Action<bool, string, List<SpaceLibrary.MarketOrder>> result)
+	{
+		// If the user hasn't yet logged in, the player ID will not be known
+		if (ms_playerID < 0)
+		{
+			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials), null);
+			return;
+		}
+
+		// Get the player for the logged in player ID
+		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/GetMarketOrders", new Dictionary<string, string>() { { "StarId", starId.ToString() } }, null,
+				(WebManager.TextWebResponse response) =>
+				{
+					if (response.IsValid)
+					{
+						List<SpaceLibrary.MarketOrder> marketOrders = JsonConvert.DeserializeObject<List<SpaceLibrary.MarketOrder>>(response.ResponseText);
+						if (marketOrders == null)
+							marketOrders = new List<SpaceLibrary.MarketOrder>();
+						result(true, "", marketOrders);
+					}
+					else
+					{
+						DebugHelpers.LogError("GetMarketOrders Error: {0} - {1}", response.ErrorCode, response.ErrorDescription);
+						result(false, GetErrorMessage(response.ErrorCode), null);
+					}
+				}
+			);
+	}
+
+	/// <summary>
+	/// Create a market order for a star
+	/// </summary>
+	/// <param name="result">Action containing whether the fetch was successful, a localised error message if not</param>
+	public static void CreateMarketOrder(int starId, int buy, int materialId, int quantity, double price, Action<bool, string> result)
+	{
+		// If the user hasn't yet logged in, the player ID will not be known
+		if (ms_playerID < 0)
+		{
+			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials));
+			return;
+		}
+
+		// Get the player for the logged in player ID
+		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/CreateMarketOrder",
+				new Dictionary<string, string>() {
+					{ "PlayerId", ms_playerID.ToString() },
+					{ "StarId", starId.ToString() },
+					{ "Buy", buy.ToString() },
+					{ "MaterialId", materialId.ToString() },
+					{ "Quantity", quantity.ToString() },
+					{ "Price", price.ToString() },
+				},
+				null,
+				(WebManager.TextWebResponse response) =>
+				{
+					if (response.IsValid)
+					{
+						result(true, "");
+					}
+					else
+					{
+						DebugHelpers.LogError("GetMarketOrders Error: {0} - {1}", response.ErrorCode, response.ErrorDescription);
+						result(false, GetErrorMessage(response.ErrorCode));
+					}
+				}
+			);
+	}
 }
