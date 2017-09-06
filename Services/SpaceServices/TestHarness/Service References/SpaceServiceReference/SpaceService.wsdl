@@ -27,6 +27,20 @@
       <s:element name="SavePlayerResponse">
         <s:complexType />
       </s:element>
+      <s:element name="GetMarketOrders">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="StarId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetMarketOrdersResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetMarketOrdersResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="GetPlayerSoapIn">
@@ -41,6 +55,12 @@
   <wsdl:message name="SavePlayerSoapOut">
     <wsdl:part name="parameters" element="tns:SavePlayerResponse" />
   </wsdl:message>
+  <wsdl:message name="GetMarketOrdersSoapIn">
+    <wsdl:part name="parameters" element="tns:GetMarketOrders" />
+  </wsdl:message>
+  <wsdl:message name="GetMarketOrdersSoapOut">
+    <wsdl:part name="parameters" element="tns:GetMarketOrdersResponse" />
+  </wsdl:message>
   <wsdl:portType name="SpaceServiceSoap">
     <wsdl:operation name="GetPlayer">
       <wsdl:input message="tns:GetPlayerSoapIn" />
@@ -49,6 +69,10 @@
     <wsdl:operation name="SavePlayer">
       <wsdl:input message="tns:SavePlayerSoapIn" />
       <wsdl:output message="tns:SavePlayerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMarketOrders">
+      <wsdl:input message="tns:GetMarketOrdersSoapIn" />
+      <wsdl:output message="tns:GetMarketOrdersSoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SpaceServiceSoap" type="tns:SpaceServiceSoap">
@@ -71,6 +95,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMarketOrders">
+      <soap:operation soapAction="http://tempuri.org/GetMarketOrders" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="SpaceServiceSoap12" type="tns:SpaceServiceSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -85,6 +118,15 @@
     </wsdl:operation>
     <wsdl:operation name="SavePlayer">
       <soap12:operation soapAction="http://tempuri.org/SavePlayer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMarketOrders">
+      <soap12:operation soapAction="http://tempuri.org/GetMarketOrders" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

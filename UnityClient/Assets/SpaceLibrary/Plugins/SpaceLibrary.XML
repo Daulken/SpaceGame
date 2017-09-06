@@ -49,6 +49,11 @@
             Type of body found in the belt
             </summary>
         </member>
+        <member name="T:SpaceLibrary.MarketOrder">
+            <summary>
+            Market Order
+            </summary>
+        </member>
         <member name="T:SpaceLibrary.GalacticCoordinate">
             <summary>
             Coordinates in light years from galactic centre

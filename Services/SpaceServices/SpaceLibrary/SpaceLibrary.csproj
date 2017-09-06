@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Belt.cs" />
+    <Compile Include="MarketOrders.cs" />
     <Compile Include="System.cs" />
     <Compile Include="Star.cs" />
     <Compile Include="Planet.cs" />

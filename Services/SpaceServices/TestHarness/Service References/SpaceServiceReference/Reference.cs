@@ -28,6 +28,13 @@ namespace TestHarness.SpaceServiceReference {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/SavePlayer", ReplyAction="*")]
         System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.SavePlayerResponse> SavePlayerAsync(TestHarness.SpaceServiceReference.SavePlayerRequest request);
+        
+        // CODEGEN: Generating message contract since element name GetMarketOrdersResult from namespace http://tempuri.org/ is not marked nillable
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GetMarketOrders", ReplyAction="*")]
+        TestHarness.SpaceServiceReference.GetMarketOrdersResponse GetMarketOrders(TestHarness.SpaceServiceReference.GetMarketOrdersRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GetMarketOrders", ReplyAction="*")]
+        System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.GetMarketOrdersResponse> GetMarketOrdersAsync(TestHarness.SpaceServiceReference.GetMarketOrdersRequest request);
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -163,6 +170,74 @@ namespace TestHarness.SpaceServiceReference {
         }
     }
     
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class GetMarketOrdersRequest {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="GetMarketOrders", Namespace="http://tempuri.org/", Order=0)]
+        public TestHarness.SpaceServiceReference.GetMarketOrdersRequestBody Body;
+        
+        public GetMarketOrdersRequest() {
+        }
+        
+        public GetMarketOrdersRequest(TestHarness.SpaceServiceReference.GetMarketOrdersRequestBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class GetMarketOrdersRequestBody {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(Order=0)]
+        public int StarId;
+        
+        public GetMarketOrdersRequestBody() {
+        }
+        
+        public GetMarketOrdersRequestBody(int StarId) {
+            this.StarId = StarId;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class GetMarketOrdersResponse {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="GetMarketOrdersResponse", Namespace="http://tempuri.org/", Order=0)]
+        public TestHarness.SpaceServiceReference.GetMarketOrdersResponseBody Body;
+        
+        public GetMarketOrdersResponse() {
+        }
+        
+        public GetMarketOrdersResponse(TestHarness.SpaceServiceReference.GetMarketOrdersResponseBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class GetMarketOrdersResponseBody {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string GetMarketOrdersResult;
+        
+        public GetMarketOrdersResponseBody() {
+        }
+        
+        public GetMarketOrdersResponseBody(string GetMarketOrdersResult) {
+            this.GetMarketOrdersResult = GetMarketOrdersResult;
+        }
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public interface SpaceServiceSoapChannel : TestHarness.SpaceServiceReference.SpaceServiceSoap, System.ServiceModel.IClientChannel {
     }
@@ -239,6 +314,31 @@ namespace TestHarness.SpaceServiceReference {
             inValue.Body.PlayerId = PlayerId;
             inValue.Body.PlayerData = PlayerData;
             return ((TestHarness.SpaceServiceReference.SpaceServiceSoap)(this)).SavePlayerAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        TestHarness.SpaceServiceReference.GetMarketOrdersResponse TestHarness.SpaceServiceReference.SpaceServiceSoap.GetMarketOrders(TestHarness.SpaceServiceReference.GetMarketOrdersRequest request) {
+            return base.Channel.GetMarketOrders(request);
+        }
+        
+        public string GetMarketOrders(int StarId) {
+            TestHarness.SpaceServiceReference.GetMarketOrdersRequest inValue = new TestHarness.SpaceServiceReference.GetMarketOrdersRequest();
+            inValue.Body = new TestHarness.SpaceServiceReference.GetMarketOrdersRequestBody();
+            inValue.Body.StarId = StarId;
+            TestHarness.SpaceServiceReference.GetMarketOrdersResponse retVal = ((TestHarness.SpaceServiceReference.SpaceServiceSoap)(this)).GetMarketOrders(inValue);
+            return retVal.Body.GetMarketOrdersResult;
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.GetMarketOrdersResponse> TestHarness.SpaceServiceReference.SpaceServiceSoap.GetMarketOrdersAsync(TestHarness.SpaceServiceReference.GetMarketOrdersRequest request) {
+            return base.Channel.GetMarketOrdersAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<TestHarness.SpaceServiceReference.GetMarketOrdersResponse> GetMarketOrdersAsync(int StarId) {
+            TestHarness.SpaceServiceReference.GetMarketOrdersRequest inValue = new TestHarness.SpaceServiceReference.GetMarketOrdersRequest();
+            inValue.Body = new TestHarness.SpaceServiceReference.GetMarketOrdersRequestBody();
+            inValue.Body.StarId = StarId;
+            return ((TestHarness.SpaceServiceReference.SpaceServiceSoap)(this)).GetMarketOrdersAsync(inValue);
         }
     }
 }

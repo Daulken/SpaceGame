@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SpaceLibrary;
 using System;
+using System.Collections.Generic;
 using System.Web.Services;
 
 namespace SpaceService
@@ -62,6 +63,32 @@ namespace SpaceService
                 cmd.Parameters.AddWithValue("@PlayerData", PlayerData);
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        [WebMethod]
+        public string GetMarketOrders(int StarId)
+        {
+            ServiceWrapper retVal = Player.PlayerWrapper();
+
+            using (DataConnection dbConnection = new DataConnection())
+            {
+                string query = "CALL GetMarketOrders(@StarId)";
+                MySqlCommand cmd = new MySqlCommand(query, dbConnection.Connection);
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@StarId", StarId);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                List<MarketOrder> MarketOrders = new List<MarketOrder>();
+                while (reader.Read())
+                {
+                    MarketOrder returnOrder = new MarketOrder();
+
+                    returnOrder.MaterialId = reader.GetInt32(0);
+                    returnOrder.Price = reader.GetDouble(1);
+                    returnOrder.Quantity = reader.GetInt32(2);
+                }
+                retVal.ReturnedJsonData = JsonConvert.SerializeObject(MarketOrders);
+            }
+            return JsonConvert.SerializeObject(retVal);
         }
     }
 }
