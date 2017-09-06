@@ -25,7 +25,7 @@ public abstract class Singleton<TDerivedType> : MonoBehaviour where TDerivedType
 					}
 
 					// Look for an instance of this type in the scene already, in case a Singleton was added
-					ms_instance = (TDerivedType)FindObjectOfType(typeof(TDerivedType));
+					ms_instance = FindObjectOfType<TDerivedType>() as TDerivedType;
 
 					// If no instance is found
 					if (ms_instance == null)
@@ -45,7 +45,7 @@ public abstract class Singleton<TDerivedType> : MonoBehaviour where TDerivedType
 					}
 
 					// Error check that there is only one instance
-					if (FindObjectsOfType(typeof(TDerivedType)).Length > 1)
+					if (FindObjectsOfType<TDerivedType>().Length > 1)
 						DebugHelpers.LogError("[Singleton<{0}>] Something went really wrong - there should never be more than 1 Singleton! Reopening the scene might fix it.", typeof(TDerivedType).ToString());
 				}
 
