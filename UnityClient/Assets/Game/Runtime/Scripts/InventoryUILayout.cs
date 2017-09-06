@@ -10,12 +10,21 @@ public class InventoryUILayout : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		
+		SharedUILayout.OnPageChanged += OnPageChanged;
 	}
-	
+
+	void OnDestroy()
+	{
+		SharedUILayout.OnPageChanged -= OnPageChanged;
+	}
+
 	// Update is called once per frame
 	void Update ()
 	{
-		
+
+	}
+
+	public void OnPageChanged()
+	{
 	}
 }
