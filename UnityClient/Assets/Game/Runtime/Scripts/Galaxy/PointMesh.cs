@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[AddComponentMenu("SPACEJAM/PointMesh")]
+[AddComponentMenu("SPACEJAM/Galaxy/PointMesh")]
 public class PointMesh
 {
 	private Vector3[] m_positions;

@@ -7,7 +7,7 @@ using SpaceLibrary;
 using StarGeneration;
 
 
-[AddComponentMenu("SPACEJAM/Galaxy")]
+[AddComponentMenu("SPACEJAM/Galaxy/Galaxy")]
 public class Galaxy : MonoBehaviour
 {
 	private StarGeneration.GalaxyGenerator m_galaxy;
