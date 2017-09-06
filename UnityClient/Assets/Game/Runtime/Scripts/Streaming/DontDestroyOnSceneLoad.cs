@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[AddComponentMenu("SPACEJAM/DontDestroyOnSceneLoad")]
+[AddComponentMenu("SPACEJAM/Streaming/DontDestroyOnSceneLoad")]
 public class DontDestroyOnSceneLoad : MonoBehaviour
 {
 	// Use this for initialization

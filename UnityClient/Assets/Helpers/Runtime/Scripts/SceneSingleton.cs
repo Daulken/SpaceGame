@@ -22,10 +22,7 @@ public class SceneSingleton<TDerivedType> : MonoBehaviour where TDerivedType : S
 
 					// If no instance is found
 					if (instances.Length == 0)
-					{
-						DebugHelpers.LogWarning("[SceneSingleton<{0}>] Cannot find singleton in scene. Returning null.", typeof(TDerivedType).ToString());
 						return null;
-					}
 
 					ms_instance = instances[0];
 
