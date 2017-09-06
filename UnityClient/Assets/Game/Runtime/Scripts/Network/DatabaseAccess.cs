@@ -45,6 +45,14 @@ public static class DatabaseAccess
 			);
 	}
 
+	public static int LoggedInPlayerID
+	{
+		get
+		{
+			return ms_playerID;
+		}
+	}
+
 	/// <summary>
 	/// Fetch the current state of the logged in player
 	/// </summary>
