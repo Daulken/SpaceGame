@@ -8,6 +8,11 @@ public class EnableUITabNavigation : SceneSingleton<EnableUITabNavigation>
 {
 	private EventSystem m_eventSystem;
 
+	// Guarantee this will be always a singleton only - make the constructor protected!
+	protected EnableUITabNavigation()
+	{
+	}
+
 	private void Start()
 	{
 		m_eventSystem = EventSystem.current;
