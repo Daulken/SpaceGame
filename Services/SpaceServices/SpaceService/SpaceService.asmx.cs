@@ -90,5 +90,26 @@ namespace SpaceService
             }
             return JsonConvert.SerializeObject(retVal);
         }
+
+        [WebMethod]
+        public string CreateMarketOrder(int PlayerId, int StarId, int Buy, int MaterialId, int Quantity, double Price)
+        {
+            ServiceWrapper retVal = Player.PlayerWrapper();
+
+            using (DataConnection dbConnection = new DataConnection())
+            {
+                string query = "CALL CreateMarketOrder(@PlayerId, @StarId, @Buy, @MaterialId, @Quantity, @Price)";
+                MySqlCommand cmd = new MySqlCommand(query, dbConnection.Connection);
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@PlayerId", PlayerId);
+                cmd.Parameters.AddWithValue("@StarId", StarId);
+                cmd.Parameters.AddWithValue("@Buy", Buy);
+                cmd.Parameters.AddWithValue("@MaterialId", MaterialId);
+                cmd.Parameters.AddWithValue("@Quantity", Quantity);
+                cmd.Parameters.AddWithValue("@Price", Price);
+                cmd.ExecuteNonQuery();
+            }
+            return JsonConvert.SerializeObject(retVal);
+        }
     }
 }

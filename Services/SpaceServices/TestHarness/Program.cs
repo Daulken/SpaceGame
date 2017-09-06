@@ -13,12 +13,8 @@ namespace TestHarness
         static void Main(string[] args)
         {
             SpaceServiceReference.SpaceServiceSoapClient client = new SpaceServiceReference.SpaceServiceSoapClient();
-            string sWrapperData = client.GetMarketOrders(1);
+            string sWrapperData = client.CreateMarketOrder(1, 1, 1, 2, 250, 40.23);
             Console.WriteLine(sWrapperData);
-            //ServiceWrapper Wrapper = JsonConvert.DeserializeObject<ServiceWrapper>(sWrapperData);
-            //Player PlayerData = JsonConvert.DeserializeObject<Player>(Wrapper.ReturnedJsonData);
-            //PlayerData.CreditBalance += 100;
-            //client.SavePlayer(1, JsonConvert.SerializeObject(PlayerData));
             Console.ReadLine();
         }
     }
