@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[AddComponentMenu( "SPACEJAM/UI/InventoryUILayout" )]
+[AddComponentMenu("SPACEJAM/GameState/Market/InventoryUILayout")]
 public class InventoryUILayout : MonoBehaviour
 {
 	public SharedUILayout m_sharedLayout;

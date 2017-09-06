@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[AddComponentMenu( "SPACEJAM/UI/SharedUILayout" )]
+[AddComponentMenu("SPACEJAM/GameState/Market/SharedUILayout")]
 public class SharedUILayout : MonoBehaviour
 {
 	public GameObject		m_currency;

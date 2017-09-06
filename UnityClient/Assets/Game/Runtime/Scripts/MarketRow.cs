@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[AddComponentMenu("SPACEJAM/UI/MarketRow")]
+[AddComponentMenu("SPACEJAM/GameState/Market/MarketRow")]
 public class MarketRow : MonoBehaviour
 {
 	public GameObject		m_itemNameText;

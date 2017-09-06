@@ -8,12 +8,27 @@ using UnityEngine.UI;
 [AddComponentMenu("UI/LocaliseUIText")]
 public class LocaliseUIText : MonoBehaviour
 {
-	[LocalizationKey]
-	public string key;
-
 	private SystemLanguage m_language;
 	private bool m_started = false;
 	private Text m_text = null;
+
+	[SerializeField]
+	private string m_key;
+
+	public string key
+	{
+		get
+		{
+			return m_key;
+		}
+		set
+		{
+			m_key = value;
+
+			if (m_started)
+				Localize();
+		}
+	}
 
 	/// <summary>
 	/// Localize the widget on enable, but only if it has been started already.
@@ -34,6 +49,9 @@ public class LocaliseUIText : MonoBehaviour
 
 		m_started = true;
 		Localize();
+
+		// Register to receive language change notifications
+		Localization.Instance.m_onLocalize += OnLocalize;
 	}
 
 	/// <summary>

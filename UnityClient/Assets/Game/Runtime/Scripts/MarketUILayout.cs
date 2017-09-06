@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[AddComponentMenu("SPACEJAM/UI/MarketUILayout")]
-public class MarketUILayout : MonoBehaviour, IUIMessageHandler
+[AddComponentMenu("SPACEJAM/GameState/Market/MarketUILayout")]
+public class MarketUILayout : MonoBehaviour
 {
 	public SharedUILayout		m_sharedLayout;
 	public GameObject			m_rowContainer;
@@ -19,7 +19,7 @@ public class MarketUILayout : MonoBehaviour, IUIMessageHandler
 
 
 	// Use this for initialization
-	void Start()
+	void Start ()
 	{
 		// Get the template row Transform
 		RectTransform templateRowTransform = m_templateRow.GetComponent<RectTransform>();
@@ -34,17 +34,10 @@ public class MarketUILayout : MonoBehaviour, IUIMessageHandler
 
 		RefreshRows();
 		RefreshControls();
-
-		SharedUILayout.OnPageChanged += OnPageChanged;
-	}
-
-	void OnDestroy()
-	{
-		SharedUILayout.OnPageChanged -= OnPageChanged;
 	}
 	
 	// Update is called once per frame
-	void Update()
+	void Update ()
 	{
 		
 	}
@@ -65,7 +58,7 @@ public class MarketUILayout : MonoBehaviour, IUIMessageHandler
 		// Duplicate rows for each item to buy
 		int rowCount = 0;
 		for( int rowIndex = 0; rowIndex < m_maxVisibleRows; ++rowIndex )
-		{	
+		{
 			GameObject newRow = Instantiate( m_templateRow ) as GameObject;
 			m_rows.Add( newRow );
 
@@ -123,11 +116,5 @@ public class MarketUILayout : MonoBehaviour, IUIMessageHandler
 	public void BuyClicked()
 	{
 		RefreshRows();
-	}
-
-	public void OnPageChanged()
-	{
-		RefreshRows();
-		RefreshControls();
 	}
 }
