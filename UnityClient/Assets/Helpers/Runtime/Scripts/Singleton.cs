@@ -1,55 +1,52 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// Be aware this will not prevent a non singleton constructor
-///   such as `T myT = new T();`
-/// To prevent that, add `protected T () {}` to your singleton class.
-/// 
-/// As a note, this is a MonoBehaviour, to allow the singleton to use Coroutines.
+/// This instantiates a singleton at runtime. This is a MonoBehaviour, to allow the singleton to use Coroutines.
+/// <para>Be aware this will not prevent a non singleton constructor such as `TDerivedType myT = new TDerivedType();`. To prevent that, add `protected TDerivedType () {}` to your singleton class.</para>
 /// </summary>
-public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class Singleton<TDerivedType> : MonoBehaviour where TDerivedType : Singleton<TDerivedType>
 {
-	private static T ms_instance;
+	private static TDerivedType ms_instance;
 	private static object ms_lock = new object();
 	private static bool ms_applicationIsQuitting = false;
 
-	public static T Instance
+	public static TDerivedType Instance
 	{
 		get
 		{
-			if (ms_applicationIsQuitting)
-			{
-				DebugHelpers.LogWarning("[Singleton] Instance '{0}' already destroyed on application quit. Won't create again - returning null.", typeof(T));
-				return null;
-			}
-
 			lock (ms_lock)
 			{
 				if (ms_instance == null)
 				{
-					// Look for an instance of this type in the scene already, in case a singleton was added
-					ms_instance = (T)FindObjectOfType(typeof(T));
-					if (FindObjectsOfType(typeof(T)).Length > 1)
+					if (ms_applicationIsQuitting)
 					{
-						DebugHelpers.LogError("[Singleton] Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
-						return ms_instance;
+						DebugHelpers.LogWarning("[Singleton<{0}>] Instance already destroyed on application quit. Won't create again. Returning null.", typeof(TDerivedType).ToString());
+						return null;
 					}
 
-					// Automatically create one if not found
+					// Look for an instance of this type in the scene already, in case a Singleton was added
+					ms_instance = (TDerivedType)FindObjectOfType(typeof(TDerivedType));
+
+					// If no instance is found
 					if (ms_instance == null)
 					{
+						// Automatically create one
 #if UNITY_EDITOR
-						GameObject singleton = UnityEditor.EditorUtility.CreateGameObjectWithHideFlags("_Singleton_" + typeof(T).ToString(), HideFlags.HideAndDontSave);
+						GameObject singleton = UnityEditor.EditorUtility.CreateGameObjectWithHideFlags("_Singleton_" + typeof(TDerivedType).ToString(), HideFlags.HideAndDontSave);
 #else
-						GameObject singleton = new GameObject("_Singleton_" + typeof(T).ToString());
+						GameObject singleton = new GameObject("_Singleton_" + typeof(TDerivedType).ToString());
 						singleton.hideFlags = HideFlags.HideAndDontSave;
 #endif
-						ms_instance = singleton.AddComponent<T>();
+						ms_instance = singleton.AddComponent<TDerivedType>();
 
 						// Ensure we don't get destroyed between scenes
 						if (Application.isPlaying)
 							DontDestroyOnLoad(singleton);
 					}
+
+					// Error check that there is only one instance
+					if (FindObjectsOfType(typeof(TDerivedType)).Length > 1)
+						DebugHelpers.LogError("[Singleton<{0}>] Something went really wrong - there should never be more than 1 Singleton! Reopening the scene might fix it.", typeof(TDerivedType).ToString());
 				}
 
 				return ms_instance;
