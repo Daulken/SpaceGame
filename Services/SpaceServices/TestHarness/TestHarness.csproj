@@ -58,9 +58,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Service References\SpaceServiceReference\SpaceService.wsdl" />
+    <None Include="Service References\SpaceServiceReference\TestHarness.SpaceServiceReference.CreateMarketOrderResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\SpaceServiceReference\TestHarness.SpaceServiceReference.GetMarketOrdersResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Service References\SpaceServiceReference\TestHarness.SpaceServiceReference.GetPlayerResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
