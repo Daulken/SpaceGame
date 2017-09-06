@@ -13,7 +13,7 @@ public class LoginHandler : MonoBehaviour
 	// Use this for initialization
 	public void Login()
 	{
-		LoginDialog.Instance.Show("LOGIN_INFO_LOGGING_IN");
+		MessageDialog.Instance.Show("LOGIN_INFO_LOGGING_IN");
 
 		// Log in to the database
 		DatabaseAccess.Login(m_usernameInput.text, m_passwordInput.text, (loginSuccess, loginError) =>
@@ -22,14 +22,14 @@ public class LoginHandler : MonoBehaviour
 					{
 						DebugHelpers.Log("Logged in as player {0}. Fetching", DatabaseAccess.LoggedInPlayerID);
 
-						LoginDialog.Instance.Show("LOGIN_INFO_FETCHING_PLAYER");
+						MessageDialog.Instance.Show("LOGIN_INFO_FETCHING_PLAYER");
 
 						// Request data for the player
 						DatabaseAccess.GetPlayer((getSuccess, getError, player) =>
 								{
 									if (getSuccess)
 									{
-										LoginDialog.Instance.Show("LOGIN_INFO_LOADING_WORLD");
+										MessageDialog.Instance.Show("LOGIN_INFO_LOADING_WORLD");
 
 										// TODO: Change game state to the system view initially
 										//GameplayManager.Instance.CurrentState = GameplayManager.State.System;
@@ -37,12 +37,12 @@ public class LoginHandler : MonoBehaviour
 										// Change game state to the market view initially
 										GameplayManager.Instance.CurrentState = GameplayManager.State.Market;
 
-										LoginDialog.Instance.Hide();
+										MessageDialog.Instance.Hide();
 									}
 									else
 									{
 										// Display error dialog
-										LoginDialog.Instance.Hide();
+										MessageDialog.Instance.Hide();
 										InfoDialog.Instance.Show("LOGIN_ERROR_TITLE", getError, null);
 									}
 								}
@@ -51,7 +51,7 @@ public class LoginHandler : MonoBehaviour
 					else
 					{
 						// Display error dialog
-						LoginDialog.Instance.Hide();
+						MessageDialog.Instance.Hide();
 						InfoDialog.Instance.Show("LOGIN_ERROR_TITLE", loginError, null);
 					}
 				}

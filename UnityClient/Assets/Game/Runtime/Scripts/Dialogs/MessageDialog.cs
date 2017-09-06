@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[AddComponentMenu("SPACEJAM/UI/Dialogs/LoginDialog")]
-public class LoginDialog : SceneSingleton<LoginDialog>
+[AddComponentMenu("SPACEJAM/UI/Dialogs/MessageDialog")]
+public class MessageDialog : SceneSingleton<MessageDialog>
 {
 	public LocaliseUIText m_message;
 
 	// Guarantee this will be always a singleton only - make the constructor protected!
-	protected LoginDialog()
+	protected MessageDialog()
 	{
 	}
 
