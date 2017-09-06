@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 
 [AddComponentMenu("SPACEJAM/GameState/Login/LoginHandler")]
@@ -9,6 +10,12 @@ public class LoginHandler : MonoBehaviour
 {
 	public UnityEngine.UI.InputField m_usernameInput;
 	public UnityEngine.UI.InputField m_passwordInput;
+
+	protected void Start()
+	{
+		// Ensure that the user name is the first selected game object
+		EventSystem.current.SetSelectedGameObject(m_usernameInput.gameObject);
+	}
 
 	// Use this for initialization
 	public void Login()
