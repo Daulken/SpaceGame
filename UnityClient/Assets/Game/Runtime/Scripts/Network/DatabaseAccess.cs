@@ -8,8 +8,7 @@ using Newtonsoft.Json;
 public static class DatabaseAccess
 {
 	// The player ID for the current login
-	// TODO: Set this to -1 until logged in. Requires the Login functionality first though
-	private static int ms_playerID = 1;
+	private static int ms_playerID = -1;
 
 	/// <summary>
 	/// Get the localised message for a given error code
@@ -39,7 +38,11 @@ public static class DatabaseAccess
 					else
 					{
 						DebugHelpers.LogError("Login Error: {0} - {1}", response.ErrorCode, response.ErrorDescription);
-						result(false, GetErrorMessage(response.ErrorCode));
+
+						// TODO: Enable logging in correctly once implemented on the services
+						// result(false, GetErrorMessage(response.ErrorCode));
+						ms_playerID = 1;
+						result(true, "");
 					}
 				}
 			);
