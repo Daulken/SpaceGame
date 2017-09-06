@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[AddComponentMenu("SPACEJAM/SetDontDestroyOnLoad")]
-public class SetDontDestroyOnLoad : MonoBehaviour
+[AddComponentMenu("SPACEJAM/DontDestroyOnSceneLoad")]
+public class DontDestroyOnSceneLoad : MonoBehaviour
 {
 	// Use this for initialization
 	protected void Awake()

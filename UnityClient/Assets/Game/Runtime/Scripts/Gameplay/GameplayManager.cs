@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-[AddComponentMenu("SPACEJAM/GameplayManager")]
+[AddComponentMenu("SPACEJAM/GameState/GameplayManager")]
 public class GameplayManager : SceneSingleton<GameplayManager>
 {
 	public enum State

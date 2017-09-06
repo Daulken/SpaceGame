@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[AddComponentMenu("SPACEJAM/Communication/LoginHandler")]
+[AddComponentMenu("SPACEJAM/GameState/Login/LoginHandler")]
 public class LoginHandler : MonoBehaviour
 {
 	public UnityEngine.UI.InputField m_usernameInput;

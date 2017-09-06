@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[AddComponentMenu("SPACEJAM/UI/MarketRowButtonClickHandler")]
+[AddComponentMenu("SPACEJAM/GameState/Market/MarketRowButtonClickHandler")]
 public class MarketRowButtonClickHandler : MonoBehaviour, UnityEngine.EventSystems.IPointerClickHandler, UnityEngine.EventSystems.IDeselectHandler, UnityEngine.EventSystems.ISelectHandler
 {
 	public int			m_rowIndex = 0;
