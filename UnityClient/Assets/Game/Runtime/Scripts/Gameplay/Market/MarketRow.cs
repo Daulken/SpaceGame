@@ -22,6 +22,7 @@ public class MarketRow : MonoBehaviour
 	{		
 	}
 
+	// Fill in the UI elements on the row - name, cost etc
 	public void PopulateUI()
 	{
 		UnityEngine.UI.Text itemNameTextComponent = m_itemNameText.GetComponent<UnityEngine.UI.Text>();

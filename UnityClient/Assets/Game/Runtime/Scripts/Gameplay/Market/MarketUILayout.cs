@@ -19,7 +19,6 @@ public class MarketUILayout : MonoBehaviour
 
 	private List<SpaceLibrary.MarketOrder> m_orders;
 	private int					m_numMarketEntries = 0;
-	private int					m_entryOffset = 0;
 
 
 	// Use this for initialization
@@ -56,7 +55,7 @@ public class MarketUILayout : MonoBehaviour
 		
 	}
 
-	// Populate the view with the appropiate data
+	// Populate the market view with the appropiate data
 	int RefreshRows()
 	{
 		// Remove existing rows
@@ -73,9 +72,10 @@ public class MarketUILayout : MonoBehaviour
 		int rowCount = 0;
 		for( int rowIndex = 0; rowIndex < m_maxVisibleRows; ++rowIndex )
 		{ 
-			int entryIndex = rowIndex + m_entryOffset;
+			int entryIndex = rowIndex + m_sharedLayout.m_currentPage * m_maxVisibleRows;
 			if( entryIndex < m_numMarketEntries )
 			{
+				// Create a new row
 				GameObject newRow = Instantiate( m_templateRow ) as GameObject;
 				m_rows.Add( newRow );
 
@@ -86,6 +86,7 @@ public class MarketUILayout : MonoBehaviour
 					newRowClickHandler.m_rowIndex = rowIndex;
 				}
 
+				// Fill in the row info
 				MarketRow row = newRow.GetComponent<MarketRow>();
 				if( row != null )
 				{
@@ -110,6 +111,7 @@ public class MarketUILayout : MonoBehaviour
 		return rowCount;
 	}
 
+	// Update the state of the other controls like the buy button
 	void RefreshControls()
 	{
 		// If a row is selected, enable the buy button
@@ -125,6 +127,7 @@ public class MarketUILayout : MonoBehaviour
 		// RowSelected seems to do what we want here - not sure we need the click detection?
 	}
 
+	// Called when a row is selected
 	public void RowSelected( int rowIndex )
 	{
 		m_isAnyRowSelected = true;
@@ -133,6 +136,7 @@ public class MarketUILayout : MonoBehaviour
 		RefreshControls();
 	}
 
+	// Call when a row is deselected
 	public void RowDeselected()
 	{
 		m_isAnyRowSelected = false;
@@ -140,45 +144,56 @@ public class MarketUILayout : MonoBehaviour
 		RefreshControls();
 	}
 
+	// Called when 'buy' is clicked
 	public void BuyClicked()
 	{
 		RefreshRows();
 	}
 
+	// Called when 'refresh' is clicked
 	public void RefreshClicked()
 	{
 		FetchMarketData();
 	}
 
+	// Called when the page is changed by a button click
 	public void OnPageChanged()
 	{
 	}
 
+	// Called from shared UI layout when the player data has been obtained
 	public void OnPlayerDataReturned()
 	{
 		m_sharedLayout.RefreshCommonElements( 0, 1 );
 		FetchMarketData();
 	}
 
+	// Obtain the market data
 	private void FetchMarketData()
 	{
 		// This will call FetchPlayerResult when the response has come back
 		DatabaseAccess.GetMarketOrders( 1, MarketDataReturned );
 	}
 
+	// Callback for when the market data has been obtained
 	private void MarketDataReturned( bool success, string error, List<SpaceLibrary.MarketOrder> marketOrders )
 	{
 		if( success )
 		{
+			// Reset the market view
 			m_numMarketEntries = marketOrders.Count;
 			m_orders = marketOrders;
-			RefreshRows();
 		}
 		else
 		{
+			// Empty the market
 			m_numMarketEntries = 0;
+			m_orders.Clear();
+
 			// Display error dialog
 			InfoDialog.Instance.Show( "LOGIN_ERROR_TITLE", error, null );
 		}
+		m_sharedLayout.SetPage( 0 );
+		RefreshRows();
 	}
 }

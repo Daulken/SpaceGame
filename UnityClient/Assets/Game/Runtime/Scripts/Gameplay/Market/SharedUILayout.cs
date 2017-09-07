@@ -11,7 +11,7 @@ public class SharedUILayout : MonoBehaviour
 	public GameObject		m_pageDownButton;
 
 	private int				m_numPages = 1;
-	private int				m_currentPage = 0;
+	public int				m_currentPage = 0;
 
 	private System.Decimal	m_currentCurrencyAmountOwned = 0;
 
@@ -34,6 +34,7 @@ public class SharedUILayout : MonoBehaviour
 		
 	}
 
+	// Update the common elements of market, inventory view etc, such as page up/down arrows
 	public void RefreshCommonElements(int currentPage, int numPages )
 	{
 		if( m_storedPlayer != null )
@@ -42,6 +43,7 @@ public class SharedUILayout : MonoBehaviour
 		}
 		m_currentPage = currentPage;
 		m_numPages = numPages;
+
 		if( m_currency != null )
 		{
 			UnityEngine.UI.Text currencyText = m_currency.GetComponent<UnityEngine.UI.Text>();
@@ -56,6 +58,7 @@ public class SharedUILayout : MonoBehaviour
 		}
 	}
 
+	// Called when page up button is clicked
 	public void OnPageUp()
 	{
 		if( m_currentPage > 0 )
@@ -65,6 +68,7 @@ public class SharedUILayout : MonoBehaviour
 		}
 	}
 
+	// Called when page down button is clicked
 	public void OnPageDown()
 	{
 		int maxPage = m_numPages - 1;
@@ -75,12 +79,20 @@ public class SharedUILayout : MonoBehaviour
 		}
 	}
 
+	// Explicitly set the page
+	public void SetPage( int pageNum )
+	{
+		m_currentPage = pageNum;
+	}
+
+	// Request the player data
 	public void FetchPlayerData()
 	{
 		// This will call FetchPlayerResult when the response has come back
 		DatabaseAccess.GetPlayer( ReturnedPlayerData );
 	}
 
+	// Callback that gets called when the player data is ready
 	private void ReturnedPlayerData( bool success, string error, SpaceLibrary.Player player )
 	{
 		if( success )
