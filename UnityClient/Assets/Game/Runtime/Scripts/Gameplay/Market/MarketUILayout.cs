@@ -17,7 +17,9 @@ public class MarketUILayout : MonoBehaviour
 	private int					m_selectedRow = 0;
 	private bool				m_isAnyRowSelected = false;
 
+	private List<SpaceLibrary.MarketOrder> m_orders;
 	private int					m_numMarketEntries = 0;
+	private int					m_entryOffset = 0;
 
 
 	// Use this for initialization
@@ -70,26 +72,39 @@ public class MarketUILayout : MonoBehaviour
 		// Duplicate rows for each item to buy
 		int rowCount = 0;
 		for( int rowIndex = 0; rowIndex < m_maxVisibleRows; ++rowIndex )
-		{
-			GameObject newRow = Instantiate( m_templateRow ) as GameObject;
-			m_rows.Add( newRow );
-
-			// Set the index on the click handler, so when we get a clicked callback, we know which row it came from
-			MarketRowButtonClickHandler newRowClickHandler = newRow.GetComponent<MarketRowButtonClickHandler>();
-			if( newRowClickHandler != null )
+		{ 
+			int entryIndex = rowIndex + m_entryOffset;
+			if( entryIndex < m_numMarketEntries )
 			{
-				newRowClickHandler.m_rowIndex = rowIndex;
+				GameObject newRow = Instantiate( m_templateRow ) as GameObject;
+				m_rows.Add( newRow );
+
+				// Set the index on the click handler, so when we get a clicked callback, we know which row it came from
+				MarketRowButtonClickHandler newRowClickHandler = newRow.GetComponent<MarketRowButtonClickHandler>();
+				if( newRowClickHandler != null )
+				{
+					newRowClickHandler.m_rowIndex = rowIndex;
+				}
+
+				MarketRow row = newRow.GetComponent<MarketRow>();
+				if( row != null )
+				{
+					row.m_materialID = m_orders[ entryIndex ].MaterialId;
+					row.m_price = (System.Decimal)m_orders[ entryIndex ].Price;
+					row.m_quantity = (System.UInt32)m_orders[ entryIndex ].Quantity;
+					row.PopulateUI();
+				}
+
+				RectTransform newRowTransform = newRow.GetComponent<RectTransform>();
+
+				// Set the parent to be the container object
+				newRowTransform.SetParent( containerTransform, false );
+				float rowOffset = m_totalRowHeight * ( float )rowIndex;
+				Vector2 newPos = new Vector2( newRowTransform.anchoredPosition.x, newRowTransform.anchoredPosition.y - rowOffset );
+				newRowTransform.anchoredPosition = newPos;
+
+				++rowCount;
 			}
-
-			RectTransform newRowTransform = newRow.GetComponent<RectTransform>();
-
-			// Set the parent to be the container object
-			newRowTransform.SetParent( containerTransform, false );
-			float rowOffset = m_totalRowHeight * ( float )rowIndex;
-			Vector2 newPos = new Vector2( newRowTransform.anchoredPosition.x, newRowTransform.anchoredPosition.y - rowOffset );
-			newRowTransform.anchoredPosition = newPos;
-
-			++rowCount;
 		}
 
 		return rowCount;
@@ -156,10 +171,12 @@ public class MarketUILayout : MonoBehaviour
 		if( success )
 		{
 			m_numMarketEntries = marketOrders.Count;
+			m_orders = marketOrders;
 			RefreshRows();
 		}
 		else
 		{
+			m_numMarketEntries = 0;
 			// Display error dialog
 			InfoDialog.Instance.Show( "LOGIN_ERROR_TITLE", error, null );
 		}
