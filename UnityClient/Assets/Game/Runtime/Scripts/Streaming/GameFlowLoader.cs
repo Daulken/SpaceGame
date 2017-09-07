@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 [AddComponentMenu("SPACEJAM/Streaming/GameFlowLoader")]
 public class GameFlowLoader : MonoBehaviour
 {
+	public string m_autoLoginUsername;
+	public string m_autoLoginPassword;
+
 	private GameplayManager.State m_initialState;
 
 	// This is called for all components before Start, even if not enabled
@@ -32,8 +35,29 @@ public class GameFlowLoader : MonoBehaviour
 
 		SceneManager.sceneLoaded -= OnSceneChanged;
 
-		// Then switch the current state back to this scene
-		GameplayManager.Instance.CurrentState = m_initialState;
+		// If the initial state isn't the Login state, perform an auto-login, so that the player can be fetched
+		if (m_initialState != GameplayManager.State.Login)
+		{
+			MessageDialog.Instance.Show("LOGIN_INFO_LOGGING_IN");
+
+			// Log in to the database
+			DatabaseAccess.Login(m_autoLoginUsername, m_autoLoginPassword, (loginSuccess, loginError) =>
+					{
+						MessageDialog.Instance.Hide();
+
+						if (loginSuccess)
+						{
+							// Switch the current state back to this scene
+							GameplayManager.Instance.CurrentState = m_initialState;
+						}
+						else
+						{
+							// Display error dialog
+							InfoDialog.Instance.Show("LOGIN_ERROR_TITLE", loginError, null);
+						}
+					}
+				);
+		}
 	}
 
 	// This is called whenever the node is enabled.

@@ -9,6 +9,7 @@ public class GameplayManager : SceneSingleton<GameplayManager>
 {
 	public enum State
 	{
+		None,
 		Login,
 		Market,
 		System,
@@ -16,7 +17,7 @@ public class GameplayManager : SceneSingleton<GameplayManager>
 		PlanetSide,
 	}
 
-	private State m_currentState = State.Login;
+	private State m_currentState = State.None;
 
 	public State CurrentState
 	{
@@ -37,11 +38,5 @@ public class GameplayManager : SceneSingleton<GameplayManager>
 	// Guarantee this will be always a singleton only - make the constructor protected!
 	protected GameplayManager()
 	{
-	}
-
-	protected void Awake()
-	{
-		// Always start on the login screen
-		CurrentState = State.Login;
 	}
 }
