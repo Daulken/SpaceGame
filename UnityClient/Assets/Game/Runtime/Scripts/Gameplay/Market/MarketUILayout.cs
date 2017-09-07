@@ -17,6 +17,8 @@ public class MarketUILayout : MonoBehaviour
 	private int					m_selectedRow = 0;
 	private bool				m_isAnyRowSelected = false;
 
+	private int					m_numMarketEntries = 0;
+
 
 	// Use this for initialization
 	void Start ()
@@ -134,23 +136,27 @@ public class MarketUILayout : MonoBehaviour
 
 	public void OnPlayerDataReturned()
 	{
-		//FetchMarketData();
+		m_sharedLayout.RefreshCommonElements( 0, 1 );
+		FetchMarketData();
 	}
 
 	private void FetchMarketData()
 	{
-		DatabaseAccess.GetMarketOrders( m_sharedLayout.m_storedPlayer.PlayerId, ( success, error, marketOrders ) =>
-				{
-					if( success )
-					{
-						//marketOrders.Count
-					}
-					else
-					{
-						// Display error dialog
-						InfoDialog.Instance.Show( "LOGIN_ERROR_TITLE", error, null );
-					}
-				}
-			);
+		// This will call FetchPlayerResult when the response has come back
+		DatabaseAccess.GetMarketOrders( 1, MarketDataReturned );
+	}
+
+	private void MarketDataReturned( bool success, string error, List<SpaceLibrary.MarketOrder> marketOrders )
+	{
+		if( success )
+		{
+			m_numMarketEntries = marketOrders.Count;
+			RefreshRows();
+		}
+		else
+		{
+			// Display error dialog
+			InfoDialog.Instance.Show( "LOGIN_ERROR_TITLE", error, null );
+		}
 	}
 }

@@ -13,7 +13,7 @@ public class SharedUILayout : MonoBehaviour
 	private int				m_numPages = 1;
 	private int				m_currentPage = 0;
 
-	private System.UInt64	m_currentCurrencyAmountOwned = 0;
+	private System.Decimal	m_currentCurrencyAmountOwned = 0;
 
 	public delegate void	PageChangedAction();
 	public static event		PageChangedAction OnPageChanged;
@@ -38,7 +38,7 @@ public class SharedUILayout : MonoBehaviour
 	{
 		if( m_storedPlayer != null )
 		{
-			m_currentCurrencyAmountOwned = ( System.UInt64 )m_storedPlayer.CreditBalance;
+			m_currentCurrencyAmountOwned = ( System.Decimal )m_storedPlayer.CreditBalance;
 		}
 		m_currentPage = currentPage;
 		m_numPages = numPages;
