@@ -23,12 +23,12 @@ public static class WebManager
 		// 0xx Unity
 		Unity_NoHost = 0,
 
-		// 1xx Informational
+		// 1xx Informational (Not Displayed Externally)
 		HTTP_Continue = 100,
 		HTTP_SwitchingProtocols = 101,
 		HTTP_WebDAV_Processing = 102,
 
-		// 2xx Success
+		// 2xx Success (Not Displayed Externally)
 		HTTP_OK = 200,
 		HTTP_Created = 201,
 		HTTP_Accepted = 202,
@@ -40,7 +40,7 @@ public static class WebManager
 		HTTP_WebDAV_AlreadyReported = 208,
 		HTTP_IMUsed = 225,
 
-		// 3xx Redirection
+		// 3xx Redirection (Not Displayed Externally)
 		HTTP_MultipleChoices = 300,
 		HTTP_MovedPermanently = 301,
 		HTTP_Found = 302,
@@ -65,25 +65,28 @@ public static class WebManager
 		HTTP_Gone = 410,
 		HTTP_LengthRequired = 411,
 		HTTP_PreconditionFailed = 412,
-		HTTP_RequestEntityTooLarge = 413,
-		HTTP_RequestURLTooLong = 414,
+		HTTP_PayloadTooLarge = 413,
+		HTTP_RequestURITooLong = 414,
 		HTTP_UnsupportedMediaType = 415,
 		HTTP_RequestedRangeNotSatisfiable = 416,
 		HTTP_ExpectationFailed = 417,
 		HTTP_RFC2324_ImATeapot = 418,
-		HTTP_Twitter_EnhanceYourCalm = 420,
+		HTTP_MisdirectedRequest = 421,
 		HTTP_WebDAV_UnprocessableEntity = 422,
 		HTTP_WebDAV_Locked = 423,
 		HTTP_WebDAV_FailedDependency = 424,
-		HTTP_WebDAV_Reserved = 425,
 		HTTP_UpgradeRequired = 426,
 		HTTP_PreconditionRequired = 428,
 		HTTP_TooManyRequests = 429,
 		HTTP_RequestHeaderFieldsTooLarge = 431,
+		HTTP_Microsoft_LoginTimeout = 440,
 		HTTP_Nginx_NoResponse = 444,
 		HTTP_Microsoft_RetryWith = 449,
 		HTTP_Microsoft_BlockedByWindowsParentalControls = 450,
 		HTTP_UnavailableForLegalPurposes = 451,
+		HTTP_Nginx_CertificateError = 495,
+		HTTP_Nginx_CertificateRequired = 496,
+		HTTP_Nginx_HTTPRequestSentToHTTPSPort,
 		HTTP_Nginx_ClientClosedRequest = 499,
 
 		// 5xx Server Error

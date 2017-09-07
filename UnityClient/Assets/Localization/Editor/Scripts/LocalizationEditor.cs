@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
@@ -7,24 +8,31 @@ using System.Collections.Generic;
 /// </summary>
 public class LocalizationEditor : EditorWindow
 {
-	public static LocalizationEditor ms_instance;
-
-	void OnEnable()
-	{
-		ms_instance = this;
-	}
-
-	void OnDisable()
-	{
-		ms_instance = null;
-	}
+	private Dictionary<string, Dictionary<SystemLanguage, string>> m_lastAppliedTranslations;
+	private Vector2 m_scrollPositionTranslations = Vector2.zero;
+	private bool m_translating = false;
 
 	[MenuItem("SPACEJAM/Localization/Open Editor")]
-	static public void OpenLocalizationEditor()
+	public static void OpenLocalizationEditor()
 	{
 		EditorWindow.GetWindow<LocalizationEditor>(false, "Localization", true);
 	}
-		
+
+	[MenuItem("SPACEJAM/Localization/Open Stringtable")]
+	public static void OpenStringtable()
+	{
+		string[] guids = AssetDatabase.FindAssets("Strings");
+		foreach (string guid in guids)
+		{
+			string name = AssetDatabase.GUIDToAssetPath(guid);
+			if (name.ToLower().Contains("strings.ods"))
+			{
+				Object stringtable = AssetDatabase.LoadAssetAtPath(name, typeof(Object));
+				AssetDatabase.OpenAsset(stringtable);
+			}
+		}
+	}
+
 	/// <summary>
 	/// Draw the custom wizard.
 	/// </summary>
@@ -34,7 +42,50 @@ public class LocalizationEditor : EditorWindow
 		GUIStyle wrappedBoxStyle = new GUIStyle(EditorStyles.textField);
 		wrappedBoxStyle.wordWrap = true;
 		string stringtableResourceName = PlayerPrefs.GetString("LocalisationStringTableResourceName", "Strings_Stringtable");
-		GUILayout.Label(stringtableResourceName, wrappedBoxStyle);
+		EditorGUILayout.LabelField("Stringtable Resource: ", stringtableResourceName, wrappedBoxStyle);
+
+		// Update the localisation if changed
+		if (!m_translating)
+		{
+			bool applyLocalisation = GUILayout.Button("Auto-translate missing entries from English");
+			if ((GUI.changed && Application.isPlaying) || applyLocalisation)
+			{
+				m_translating = true;
+				Localization.Instance.AutoTranslateNonEnglishLanguages((changes) =>
+						{
+							m_lastAppliedTranslations = changes;
+							m_translating = false;
+						}
+					);
+			}
+		}
+		else
+		{
+			if (GUILayout.Button("Cancel translation"))
+			{
+				Localization.Instance.CancelAutoTranslate();
+				m_translating = false;
+			}
+		}
+
+		// Show the last applied auto-translations
+		if ((m_lastAppliedTranslations != null) && (m_lastAppliedTranslations.Count > 0))
+		{
+			GUILayout.Label("Applied translations:");
+			m_scrollPositionTranslations = GUILayout.BeginScrollView(m_scrollPositionTranslations, GUILayout.ExpandHeight(true));
+			EditorHelpers.StartBox();
+
+			foreach (KeyValuePair<string, Dictionary<SystemLanguage, string>> keyDictPair in m_lastAppliedTranslations)
+			{
+				GUILayout.Label(keyDictPair.Key, EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
+				foreach (KeyValuePair<SystemLanguage, string> languageStringPair in keyDictPair.Value)
+				{
+					GUILayout.Label(string.Format("{0}: {1}", languageStringPair.Key.ToString(), languageStringPair.Value), EditorStyles.label, GUILayout.ExpandWidth(true));
+				}
+			}
+			EditorHelpers.EndBox();
+			GUILayout.EndScrollView();
+		}
 	}
 }
 

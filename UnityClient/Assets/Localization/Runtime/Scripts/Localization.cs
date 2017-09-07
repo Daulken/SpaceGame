@@ -3,6 +3,7 @@ using UnityEngine;
 	using UnityEditor;
 	using System.IO;
 	using System.Text;
+	using System.Collections;
 #endif
 using System;
 using System.Collections.Generic;
@@ -192,7 +193,148 @@ public class Localization : Singleton<Localization>
 		// Return the newly cached data
 		return m_localisationData;
 	}
-					
+
+#if UNITY_EDITOR
+	private IEnumerator m_translationPerformer;
+
+	public void AutoTranslateNonEnglishLanguages(Action<Dictionary<string, Dictionary<SystemLanguage, string>>> result)
+	{
+		// If already translating, do nothing
+		if (m_translationPerformer != null)
+			return;
+
+		// Update the cached localisation keys for this stringtable if required, and return the cached data
+		LocalisationData cachedData = Instance.UpdateLocalisationData();
+
+		// Perform translations
+		m_translationPerformer = AutoTranslateNonEnglishLanguagesInternal(cachedData, (changes) =>
+				{
+					m_translationPerformer = null;
+					result(changes);
+				}
+			);
+		StartCoroutine(m_translationPerformer);
+	}
+
+	public void CancelAutoTranslate()
+	{
+		if (m_translationPerformer != null)
+		{
+			StopCoroutine(m_translationPerformer);
+			m_translationPerformer = null;
+		}
+	}
+
+	private IEnumerator AutoTranslateNonEnglishLanguagesInternal(LocalisationData cachedData, Action<Dictionary<string, Dictionary<SystemLanguage, string>>> result)
+	{
+		Dictionary<SystemLanguage, string> translationLanguageCodes = new Dictionary<SystemLanguage, string>
+				{
+					{  SystemLanguage.Afrikaans, "af" },
+					{  SystemLanguage.Arabic, "ar" },
+					{  SystemLanguage.Basque, "eu" },
+					{  SystemLanguage.Belarusian, "be" },
+					{  SystemLanguage.Bulgarian, "bg" },
+					{  SystemLanguage.Catalan, "ca" },
+					{  SystemLanguage.Chinese, "zh-CN" },
+					{  SystemLanguage.Czech, "cs" },
+					{  SystemLanguage.Danish, "da" },
+					{  SystemLanguage.Dutch, "nl" },
+					{  SystemLanguage.English, "en" },
+					{  SystemLanguage.Estonian, "et" },
+					{  SystemLanguage.Finnish, "fi" },
+					{  SystemLanguage.French, "fr" },
+					{  SystemLanguage.German, "de" },
+					{  SystemLanguage.Greek, "el" },
+					{  SystemLanguage.Hebrew, "iw" },
+					{  SystemLanguage.Hungarian, "hu" },
+					{  SystemLanguage.Icelandic, "is" },
+					{  SystemLanguage.Indonesian, "id" },
+					{  SystemLanguage.Italian, "it" },
+					{  SystemLanguage.Japanese, "ja" },
+					{  SystemLanguage.Korean, "ko" },
+					{  SystemLanguage.Latvian, "lv" },
+					{  SystemLanguage.Lithuanian, "lt" },
+					{  SystemLanguage.Norwegian, "no" },
+					{  SystemLanguage.Polish, "pl" },
+					{  SystemLanguage.Portuguese, "pt" },
+					{  SystemLanguage.Romanian, "ro" },
+					{  SystemLanguage.Russian, "ru" },
+					{  SystemLanguage.SerboCroatian, "sr" },
+					{  SystemLanguage.Slovak, "sk" },
+					{  SystemLanguage.Slovenian, "sl" },
+					{  SystemLanguage.Spanish, "es" },
+					{  SystemLanguage.Swedish, "sv" },
+					{  SystemLanguage.Thai, "th" },
+					{  SystemLanguage.Turkish, "tr" },
+					{  SystemLanguage.Ukrainian, "uk" },
+					{  SystemLanguage.Vietnamese, "vi" },
+				};
+
+		Dictionary<string, Dictionary<SystemLanguage, string>> changes = new Dictionary<string, Dictionary<SystemLanguage, string>>();
+
+		// Translate all missing non-English strings that have an English equivalent
+		Dictionary<string, string> englishTranslations = cachedData.m_translations[SystemLanguage.English];
+		foreach (SystemLanguage language in cachedData.m_translations.Keys)
+		{
+			if (language == SystemLanguage.English)
+				continue;
+
+			foreach (KeyValuePair<string, string> keyStringPair in cachedData.m_translations[language])
+			{
+				if (string.IsNullOrEmpty(keyStringPair.Value))
+				{
+					string url = String.Format("https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl={0}&dt=t&q={1}", translationLanguageCodes[language], WWW.EscapeURL(englishTranslations[keyStringPair.Key]));
+					WWW www = new WWW(url);
+					yield return www;
+
+					if (www.isDone && string.IsNullOrEmpty(www.error))
+					{
+						List<object> response = (List<object>)MiniJSON.Json.Deserialize(www.text);
+						List<object> translations = (List<object>)response[0];
+						string translation = "";
+						foreach (object block in translations)
+							translation += ((List<object>)block)[0];
+
+						if (!changes.ContainsKey(keyStringPair.Key))
+							changes[keyStringPair.Key] = new Dictionary<SystemLanguage, string>();
+						changes[keyStringPair.Key][language] = translation.Trim();
+					}
+				}
+			}
+		}
+
+		// If changes were made
+		if (changes.Count > 0)
+		{
+			// Update the cached translations
+			foreach (KeyValuePair<string, Dictionary<SystemLanguage, string>> keyDictPair in changes)
+			{
+				foreach (KeyValuePair<SystemLanguage, string> languageStringPair in keyDictPair.Value)
+				{
+					cachedData.m_translations[languageStringPair.Key][keyDictPair.Key] = languageStringPair.Value;
+				}
+			}
+
+			// Create the stringtable contents
+			string content = Storage.SerializeToString(cachedData.m_translations);
+
+			// Write the binary stringtable contents
+			string absoluteStringtableFilename = Application.dataPath + m_localisationData.m_sourceAssetPath;
+			string absoluteStringtablePath = System.IO.Path.GetDirectoryName(absoluteStringtableFilename);
+			Directory.CreateDirectory(absoluteStringtablePath);
+			StreamWriter writer = File.CreateText(absoluteStringtableFilename);
+			writer.Write(content);
+			writer.Flush();
+			writer.Close();
+
+			// Refresh the database, so the new file is loaded
+			AssetDatabase.Refresh();
+		}
+
+		result(changes);
+	}
+#endif
+
 	/// <summary>
 	/// Gets the valid languages to select from.
 	/// </summary>
