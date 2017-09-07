@@ -84,8 +84,11 @@ namespace SpaceService
 
                     returnOrder.MaterialId = reader.GetInt32(0);
                     returnOrder.Price = reader.GetDouble(1);
-                    returnOrder.Quantity = reader.GetInt32(2);
+                    returnOrder.Quantity = reader.GetInt32(2); 
+					MarketOrders.Add(returnOrder);
                 }
+                reader.Close();
+                retVal.ResponseSuccessful = true;
                 retVal.ReturnedJsonData = JsonConvert.SerializeObject(MarketOrders);
             }
             return JsonConvert.SerializeObject(retVal);

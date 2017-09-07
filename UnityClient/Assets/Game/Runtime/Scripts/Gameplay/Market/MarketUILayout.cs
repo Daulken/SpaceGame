@@ -130,6 +130,11 @@ public class MarketUILayout : MonoBehaviour
 		RefreshRows();
 	}
 
+	public void RefreshClicked()
+	{
+		FetchMarketData();
+	}
+
 	public void OnPageChanged()
 	{
 	}
