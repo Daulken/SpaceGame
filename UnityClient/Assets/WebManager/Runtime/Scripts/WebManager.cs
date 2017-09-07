@@ -304,15 +304,6 @@ public static class WebManager
 		WebCommunicator.Instance.StartCoroutine(WebCommunicator.Instance.RequestLogInInternal(username, password, response));
 	}
 
-	// Query whether currently logged in
-	public static bool LoggedIn
-	{
-		get
-		{
-			return WebCommunicator.Instance.LoggedIn;
-		}
-	}
-
 	// Register a common header to add to every request
 	public static void AddHeader(string header, string value)
 	{
@@ -373,15 +364,6 @@ internal class WebCommunicator : Singleton<WebCommunicator>
 	private const int GameVersion = 1;                                  // Current game data version
 
 	private Dictionary<string, string> m_headers = new Dictionary<string, string>();
-
-	private bool m_loggedIn = false;
-	public bool LoggedIn
-	{
-		get
-		{
-			return m_loggedIn;
-		}
-	}
 
 	private class LoginResponse
 	{
@@ -460,9 +442,6 @@ internal class WebCommunicator : Singleton<WebCommunicator>
 			{
 				// Add authentication token for all other queries
 				AddHeaderInternal("X-RWPVT", loginData.AuthToken);
-
-				// Set logged in
-				m_loggedIn = true;
 
 				// Response with success
 				response(new WebManager.WebResponse(internalResponse.ResponseHeaders));

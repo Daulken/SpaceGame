@@ -83,7 +83,7 @@ public static class DatabaseAccess
 	public static void GetPlayer(Action<bool, string, SpaceLibrary.Player> result)
 	{
 		// If the user hasn't yet logged in, the player ID will not be known
-		if (!WebManager.LoggedIn)
+		if (ms_player == null)
 		{
 			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials), null);
 			return;
@@ -123,7 +123,7 @@ public static class DatabaseAccess
 	public static void GetMarketOrders(int starId, Action<bool, string, List<SpaceLibrary.MarketOrder>> result)
 	{
 		// If the user hasn't yet logged in, the player ID will not be known
-		if (!WebManager.LoggedIn)
+		if (ms_player == null)
 		{
 			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials), null);
 			return;
@@ -156,7 +156,7 @@ public static class DatabaseAccess
 	public static void CreateMarketOrder(int starId, int buy, int materialId, int quantity, double price, Action<bool, string> result)
 	{
 		// If the user hasn't yet logged in, the player ID will not be known
-		if (!WebManager.LoggedIn)
+		if (ms_player == null)
 		{
 			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials));
 			return;

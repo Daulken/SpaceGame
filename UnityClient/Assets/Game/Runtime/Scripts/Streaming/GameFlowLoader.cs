@@ -21,6 +21,9 @@ public class GameFlowLoader : MonoBehaviour
 			m_initialState = (GameplayManager.State)Enum.Parse(typeof(GameplayManager.State), SceneManager.GetActiveScene().name);
 			if (Enum.IsDefined(typeof(GameplayManager.State), m_initialState))
 			{
+				// Suppress any default game state changes
+				SetGameStateOnStart.SuppressInitialState = true;
+
 				// If this is a valid gameplay state, then we can load the game additively to this scene
 				SceneManager.sceneLoaded += OnSceneChanged;
 				SceneManager.LoadScene("Game", LoadSceneMode.Additive);
@@ -34,6 +37,11 @@ public class GameFlowLoader : MonoBehaviour
 			return;
 
 		SceneManager.sceneLoaded -= OnSceneChanged;
+
+		// Disable any child camera(s), to ensure there only 1 in the game (comes from the Game scene)
+		Camera[] cameras = transform.GetComponentsInChildren<Camera>();
+		foreach (Camera camera in cameras)
+			camera.enabled = false;
 
 		// If the initial state isn't the Login state, perform an auto-login, so that the player can be fetched
 		if (m_initialState != GameplayManager.State.Login)
