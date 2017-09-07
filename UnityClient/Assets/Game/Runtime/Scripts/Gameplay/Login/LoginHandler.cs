@@ -27,33 +27,17 @@ public class LoginHandler : MonoBehaviour
 				{
 					if (loginSuccess)
 					{
-						DebugHelpers.Log("Logged in as player {0}. Fetching", DatabaseAccess.LoggedInPlayerID);
+						DebugHelpers.Log("Logged in as player {0}", DatabaseAccess.LoggedInPlayer.PlayerId);
 
-						MessageDialog.Instance.Show("LOGIN_INFO_FETCHING_PLAYER");
+						MessageDialog.Instance.Show("LOGIN_INFO_LOADING_WORLD");
 
-						// Request data for the player
-						DatabaseAccess.GetPlayer((getSuccess, getError, player) =>
-								{
-									if (getSuccess)
-									{
-										MessageDialog.Instance.Show("LOGIN_INFO_LOADING_WORLD");
+						// TODO: Change game state to the system view initially
+						//GameplayManager.Instance.CurrentState = GameplayManager.State.System;
 
-										// TODO: Change game state to the system view initially
-										//GameplayManager.Instance.CurrentState = GameplayManager.State.System;
+						// Change game state to the market view initially
+						GameplayManager.Instance.CurrentState = GameplayManager.State.Market;
 
-										// Change game state to the market view initially
-										GameplayManager.Instance.CurrentState = GameplayManager.State.Market;
-
-										MessageDialog.Instance.Hide();
-									}
-									else
-									{
-										// Display error dialog
-										MessageDialog.Instance.Hide();
-										InfoDialog.Instance.Show("LOGIN_ERROR_TITLE", getError, null);
-									}
-								}
-							);
+						MessageDialog.Instance.Hide();
 					}
 					else
 					{

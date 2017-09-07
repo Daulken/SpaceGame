@@ -304,12 +304,12 @@ public static class WebManager
 		WebCommunicator.Instance.StartCoroutine(WebCommunicator.Instance.RequestLogInInternal(username, password, response));
 	}
 
-	// Query the currently logged in player ID
-	public static int LoggedInPlayerID
+	// Query whether currently logged in
+	public static bool LoggedIn
 	{
 		get
 		{
-			return WebCommunicator.Instance.LoggedInPlayerID;
+			return WebCommunicator.Instance.LoggedIn;
 		}
 	}
 
@@ -374,12 +374,12 @@ internal class WebCommunicator : Singleton<WebCommunicator>
 
 	private Dictionary<string, string> m_headers = new Dictionary<string, string>();
 
-	private int m_loggedInPlayerID = -1;
-	public int LoggedInPlayerID
+	private bool m_loggedIn = false;
+	public bool LoggedIn
 	{
 		get
 		{
-			return m_loggedInPlayerID;
+			return m_loggedIn;
 		}
 	}
 
@@ -461,8 +461,8 @@ internal class WebCommunicator : Singleton<WebCommunicator>
 				// Add authentication token for all other queries
 				AddHeaderInternal("X-RWPVT", loginData.AuthToken);
 
-				// Set logged in player ID
-				m_loggedInPlayerID = loginData.PlayerID;
+				// Set logged in
+				m_loggedIn = true;
 
 				// Response with success
 				response(new WebManager.WebResponse(internalResponse.ResponseHeaders));

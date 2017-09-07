@@ -37,7 +37,6 @@ public class MarketUILayout : MonoBehaviour
 
 		SharedUILayout.OnPageChanged += OnPageChanged;
 		SharedUILayout.OnPlayerDataReturned += OnPlayerDataReturned;
-		m_sharedLayout.FetchPlayerData();
 		RefreshRows();
 		RefreshControls();
 		m_sharedLayout.RefreshCommonElements( 0, 1 );

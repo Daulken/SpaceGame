@@ -7,8 +7,8 @@ using Newtonsoft.Json;
 
 public static class DatabaseAccess
 {
-	// The player ID for the current login
-	private static int ms_playerID = -1;
+	// The most up to date cache of the player for the current login
+	private static SpaceLibrary.Player ms_player = null;
 
 	/// <summary>
 	/// Get the localised message for a given error code
@@ -29,30 +29,50 @@ public static class DatabaseAccess
 		WebManager.LogIn(username, password,
 				(WebManager.WebResponse response) =>
 				{
+					/*
 					if (response.IsValid)
 					{
 						// Login was successful. Store the player ID for this account
-						ms_playerID = WebManager.LoggedInPlayerID;
 						result(true, "");
 					}
 					else
 					{
 						DebugHelpers.LogError("Login Error: {0} - {1}", response.ErrorCode, response.ErrorDescription);
-
-						// TODO: Enable logging in correctly once implemented on the services
-						// result(false, GetErrorMessage(response.ErrorCode));
-						ms_playerID = 1;
-						result(true, "");
+						result(false, GetErrorMessage(response.ErrorCode));
 					}
+					*/
+					// Get the player for the logged in player ID
+					WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/GetPlayer", new Dictionary<string, string>() { { "PlayerId", "1" } }, null,
+							(WebManager.TextWebResponse playerResponse) =>
+							{
+								if (playerResponse.IsValid)
+								{
+									SpaceLibrary.Player player = JsonConvert.DeserializeObject<SpaceLibrary.Player>(playerResponse.ResponseText);
+									if (player == null)
+									{
+										result(false, GetErrorMessage(WebManager.ErrorCode.Game_PlayerNotFound));
+									}
+									else
+									{
+										ms_player = player;
+										result(true, "");
+									}
+								}
+								else
+								{
+									result(false, GetErrorMessage(response.ErrorCode));
+								}
+							}
+						);
 				}
 			);
 	}
 
-	public static int LoggedInPlayerID
+	public static SpaceLibrary.Player LoggedInPlayer
 	{
 		get
 		{
-			return ms_playerID;
+			return ms_player;
 		}
 	}
 
@@ -63,14 +83,14 @@ public static class DatabaseAccess
 	public static void GetPlayer(Action<bool, string, SpaceLibrary.Player> result)
 	{
 		// If the user hasn't yet logged in, the player ID will not be known
-		if (ms_playerID < 0)
+		if (!WebManager.LoggedIn)
 		{
 			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials), null);
 			return;
 		}
 
 		// Get the player for the logged in player ID
-		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/GetPlayer", new Dictionary<string, string>() { { "PlayerId", ms_playerID.ToString() } }, null,
+		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/GetPlayer", new Dictionary<string, string>() { { "PlayerId", ms_player.PlayerId.ToString() } }, null,
 				(WebManager.TextWebResponse response) =>
 				{
 					if (response.IsValid)
@@ -83,6 +103,7 @@ public static class DatabaseAccess
 						}
 						else
 						{
+							ms_player = player;
 							result(true, "", player);
 						}
 					}
@@ -96,46 +117,13 @@ public static class DatabaseAccess
 	}
 
 	/// <summary>
-	/// Save the current state of the logged in player
-	/// </summary>
-	/// <param name="result">Action containing whether the fetch was successful, and a localised error message if not</param>
-	public static void SavePlayer(SpaceLibrary.Player player, Action<bool, string> result)
-	{
-		// If the user hasn't yet logged in, the player ID will not be known
-		if (ms_playerID < 0)
-		{
-			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials));
-			return;
-		}
-
-		// Re-serialise the player
-		string newPlayerData = JsonConvert.SerializeObject(player);
-
-		// Save the player data
-		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/SavePlayer", new Dictionary<string, string>() { { "PlayerId", ms_playerID.ToString() }, { "PlayerData", newPlayerData } }, null,
-				(WebManager.TextWebResponse response) =>
-				{
-					if (response.IsValid)
-					{
-						result(true, "");
-					}
-					else
-					{
-						DebugHelpers.LogError("SavePlayer Error: {0} - {1}", response.ErrorCode, response.ErrorDescription);
-						result(false, GetErrorMessage(response.ErrorCode));
-					}
-				}
-			);
-	}
-
-	/// <summary>
 	/// Fetch the current market orders for a star
 	/// </summary>
 	/// <param name="result">Action containing whether the fetch was successful, a localised error message if not, and the fetched list of market orders if valid</param>
 	public static void GetMarketOrders(int starId, Action<bool, string, List<SpaceLibrary.MarketOrder>> result)
 	{
 		// If the user hasn't yet logged in, the player ID will not be known
-		if (ms_playerID < 0)
+		if (!WebManager.LoggedIn)
 		{
 			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials), null);
 			return;
@@ -168,7 +156,7 @@ public static class DatabaseAccess
 	public static void CreateMarketOrder(int starId, int buy, int materialId, int quantity, double price, Action<bool, string> result)
 	{
 		// If the user hasn't yet logged in, the player ID will not be known
-		if (ms_playerID < 0)
+		if (!WebManager.LoggedIn)
 		{
 			result(false, GetErrorMessage(WebManager.ErrorCode.Game_InvalidCredentials));
 			return;
@@ -177,7 +165,7 @@ public static class DatabaseAccess
 		// Get the player for the logged in player ID
 		WebManager.RequestResponseText(WebManager.RequestType.Post, "SpaceService.asmx/CreateMarketOrder",
 				new Dictionary<string, string>() {
-					{ "PlayerId", ms_playerID.ToString() },
+					{ "PlayerId", ms_player.PlayerId.ToString() },
 					{ "StarId", starId.ToString() },
 					{ "Buy", buy.ToString() },
 					{ "MaterialId", materialId.ToString() },

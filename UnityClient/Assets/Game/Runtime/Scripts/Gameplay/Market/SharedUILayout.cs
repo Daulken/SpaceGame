@@ -21,8 +21,6 @@ public class SharedUILayout : MonoBehaviour
 	public delegate void PlayerDataReturnedAction();
 	public static event PlayerDataReturnedAction OnPlayerDataReturned;
 
-	public SpaceLibrary.Player m_storedPlayer;
-
 	// Use this for initialization
 	void Start ()
 	{
@@ -37,9 +35,9 @@ public class SharedUILayout : MonoBehaviour
 	// Update the common elements of market, inventory view etc, such as page up/down arrows
 	public void RefreshCommonElements(int currentPage, int numPages )
 	{
-		if( m_storedPlayer != null )
+		if (DatabaseAccess.LoggedInPlayer != null)
 		{
-			m_currentCurrencyAmountOwned = ( System.Decimal )m_storedPlayer.CreditBalance;
+			m_currentCurrencyAmountOwned = ( System.Decimal )DatabaseAccess.LoggedInPlayer.CreditBalance;
 		}
 		m_currentPage = currentPage;
 		m_numPages = numPages;
@@ -83,27 +81,5 @@ public class SharedUILayout : MonoBehaviour
 	public void SetPage( int pageNum )
 	{
 		m_currentPage = pageNum;
-	}
-
-	// Request the player data
-	public void FetchPlayerData()
-	{
-		// This will call FetchPlayerResult when the response has come back
-		DatabaseAccess.GetPlayer( ReturnedPlayerData );
-	}
-
-	// Callback that gets called when the player data is ready
-	private void ReturnedPlayerData( bool success, string error, SpaceLibrary.Player player )
-	{
-		if( success )
-		{
-			m_storedPlayer = player;
-			OnPlayerDataReturned();
-		}
-		else
-		{
-			// Display error dialog
-			InfoDialog.Instance.Show( "LOGIN_ERROR_TITLE", error, null );
-		}
 	}
 }
