@@ -24,6 +24,6 @@ public class SetGameStateOnStart : MonoBehaviour
 	{
 		// Change game state to the selected state, if not suppressed
 		if (!SuppressInitialState)
-			GameplayManager.Instance.CurrentState = m_state;
+			GameplayManager.Instance.RequestNewState(m_state);
 	}
 }

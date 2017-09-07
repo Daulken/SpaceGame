@@ -32,10 +32,10 @@ public class LoginHandler : MonoBehaviour
 						MessageDialog.Instance.Show("LOGIN_INFO_LOADING_WORLD");
 
 						// TODO: Change game state to the system view initially
-						//GameplayManager.Instance.CurrentState = GameplayManager.State.System;
+						//GameplayManager.Instance.RequestNewState(GameplayManager.State.System);
 
 						// Change game state to the market view initially
-						GameplayManager.Instance.CurrentState = GameplayManager.State.Market;
+						GameplayManager.Instance.RequestNewState(GameplayManager.State.Market);
 
 						MessageDialog.Instance.Hide();
 					}

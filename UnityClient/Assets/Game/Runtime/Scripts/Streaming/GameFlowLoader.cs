@@ -6,11 +6,9 @@ using UnityEngine.SceneManagement;
 [AddComponentMenu("SPACEJAM/Streaming/GameFlowLoader")]
 public class GameFlowLoader : MonoBehaviour
 {
-	public string m_autoLoginUsername;
-	public string m_autoLoginPassword;
-
 	private GameplayManager.State m_initialState;
 
+#if UNITY_EDITOR
 	// This is called for all components before Start, even if not enabled
 	protected void Awake()
 	{
@@ -24,9 +22,12 @@ public class GameFlowLoader : MonoBehaviour
 				// Suppress any default game state changes
 				SetGameStateOnStart.SuppressInitialState = true;
 
-				// If this is a valid gameplay state, then we can load the game additively to this scene
+				// Ensure we aren't destroyed when removing the current scene
+				DontDestroyOnLoad(gameObject);
+
+				// Replace the current scene with the Game scene, monitoring when it finishes
 				SceneManager.sceneLoaded += OnSceneChanged;
-				SceneManager.LoadScene("Game", LoadSceneMode.Additive);
+				SceneManager.LoadScene("Game");
 			}
 		}
 	}
@@ -38,35 +39,15 @@ public class GameFlowLoader : MonoBehaviour
 
 		SceneManager.sceneLoaded -= OnSceneChanged;
 
-		// Disable any child camera(s), to ensure there only 1 in the game (comes from the Game scene)
+		// Disable any child camera(s) used for Editor display, to ensure there only 1 UI camera in the game (comes from the Game scene)
 		Camera[] cameras = transform.GetComponentsInChildren<Camera>();
 		foreach (Camera camera in cameras)
 			camera.enabled = false;
 
-		// If the initial state isn't the Login state, perform an auto-login, so that the player can be fetched
-		if (m_initialState != GameplayManager.State.Login)
-		{
-			MessageDialog.Instance.Show("LOGIN_INFO_LOGGING_IN");
-
-			// Log in to the database
-			DatabaseAccess.Login(m_autoLoginUsername, m_autoLoginPassword, (loginSuccess, loginError) =>
-					{
-						MessageDialog.Instance.Hide();
-
-						if (loginSuccess)
-						{
-							// Switch the current state back to this scene
-							GameplayManager.Instance.CurrentState = m_initialState;
-						}
-						else
-						{
-							// Display error dialog
-							InfoDialog.Instance.Show("LOGIN_ERROR_TITLE", loginError, null);
-						}
-					}
-				);
-		}
+		// Switch the current state back to this scene, performing auto-login if not initially on the login screen
+		GameplayManager.Instance.RequestNewState(m_initialState, (m_initialState != GameplayManager.State.Login));
 	}
+#endif // #if UNITY_EDITOR
 
 	// This is called whenever the node is enabled.
 	// NOTE: ALL scripts require this function, even if not used, to avoid a bug with script execution order being ignored
