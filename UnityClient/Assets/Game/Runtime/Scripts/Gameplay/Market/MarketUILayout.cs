@@ -32,10 +32,20 @@ public class MarketUILayout : MonoBehaviour
 
 		m_maxVisibleRows = (int)( containerHeight / m_totalRowHeight );
 
+		SharedUILayout.OnPageChanged += OnPageChanged;
+		SharedUILayout.OnPlayerDataReturned += OnPlayerDataReturned;
+		m_sharedLayout.FetchPlayerData();
 		RefreshRows();
 		RefreshControls();
+		m_sharedLayout.RefreshCommonElements( 0, 1 );
 	}
-	
+
+	void OnDestroy()
+	{
+		SharedUILayout.OnPlayerDataReturned -= OnPlayerDataReturned;
+		SharedUILayout.OnPageChanged -= OnPageChanged;
+	}
+
 	// Update is called once per frame
 	void Update ()
 	{
@@ -116,5 +126,31 @@ public class MarketUILayout : MonoBehaviour
 	public void BuyClicked()
 	{
 		RefreshRows();
+	}
+
+	public void OnPageChanged()
+	{
+	}
+
+	public void OnPlayerDataReturned()
+	{
+		//FetchMarketData();
+	}
+
+	private void FetchMarketData()
+	{
+		DatabaseAccess.GetMarketOrders( m_sharedLayout.m_storedPlayer.PlayerId, ( success, error, marketOrders ) =>
+				{
+					if( success )
+					{
+						//marketOrders.Count
+					}
+					else
+					{
+						// Display error dialog
+						InfoDialog.Instance.Show( "LOGIN_ERROR_TITLE", error, null );
+					}
+				}
+			);
 	}
 }

@@ -10,18 +10,22 @@ public class SharedUILayout : MonoBehaviour
 	public GameObject		m_pageUpButton;
 	public GameObject		m_pageDownButton;
 
-	protected int			m_numPages = 1;
-	protected int			m_currentPage = 0;
+	private int				m_numPages = 1;
+	private int				m_currentPage = 0;
 
-	private int				m_currentCurrencyAmountOwned = 0;
+	private System.UInt64	m_currentCurrencyAmountOwned = 0;
 
 	public delegate void	PageChangedAction();
 	public static event		PageChangedAction OnPageChanged;
 
+	public delegate void PlayerDataReturnedAction();
+	public static event PlayerDataReturnedAction OnPlayerDataReturned;
+
+	public SpaceLibrary.Player m_storedPlayer;
+
 	// Use this for initialization
 	void Start ()
 	{
-		RefreshCommonElements();
 	}
 	
 	// Update is called once per frame
@@ -30,8 +34,14 @@ public class SharedUILayout : MonoBehaviour
 		
 	}
 
-	void RefreshCommonElements()
+	public void RefreshCommonElements(int currentPage, int numPages )
 	{
+		if( m_storedPlayer != null )
+		{
+			m_currentCurrencyAmountOwned = ( System.UInt64 )m_storedPlayer.CreditBalance;
+		}
+		m_currentPage = currentPage;
+		m_numPages = numPages;
 		if( m_currency != null )
 		{
 			UnityEngine.UI.Text currencyText = m_currency.GetComponent<UnityEngine.UI.Text>();
@@ -51,8 +61,8 @@ public class SharedUILayout : MonoBehaviour
 		if( m_currentPage > 0 )
 		{
 			--m_currentPage;
+			OnPageChanged();
 		}
-		OnPageChanged();
 	}
 
 	public void OnPageDown()
@@ -62,6 +72,26 @@ public class SharedUILayout : MonoBehaviour
 		{
 			++m_currentPage;
 			OnPageChanged();
+		}
+	}
+
+	public void FetchPlayerData()
+	{
+		// This will call FetchPlayerResult when the response has come back
+		DatabaseAccess.GetPlayer( ReturnedPlayerData );
+	}
+
+	private void ReturnedPlayerData( bool success, string error, SpaceLibrary.Player player )
+	{
+		if( success )
+		{
+			m_storedPlayer = player;
+			OnPlayerDataReturned();
+		}
+		else
+		{
+			// Display error dialog
+			InfoDialog.Instance.Show( "LOGIN_ERROR_TITLE", error, null );
 		}
 	}
 }
