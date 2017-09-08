@@ -36,15 +36,17 @@ public class MarketUILayout : MonoBehaviour
 		m_maxVisibleRows = (int)( containerHeight / m_totalRowHeight );
 
 		SharedUILayout.OnPageChanged += OnPageChanged;
-		SharedUILayout.OnPlayerDataReturned += OnPlayerDataReturned;
+		FetchMarketData();
 		RefreshRows();
 		RefreshControls();
 		m_sharedLayout.RefreshCommonElements( 0, 1 );
+
+		DatabaseAccess.OnPlayerUpdated += OnPlayerUpdated;
 	}
 
 	void OnDestroy()
 	{
-		SharedUILayout.OnPlayerDataReturned -= OnPlayerDataReturned;
+		DatabaseAccess.OnPlayerUpdated -= OnPlayerUpdated;
 		SharedUILayout.OnPageChanged -= OnPageChanged;
 	}
 
@@ -160,10 +162,10 @@ public class MarketUILayout : MonoBehaviour
 	{
 	}
 
-	// Called from shared UI layout when the player data has been obtained
-	public void OnPlayerDataReturned()
+	// Called whenever the player is updated
+	private void OnPlayerUpdated(SpaceLibrary.Player player)
 	{
-		m_sharedLayout.RefreshCommonElements( 0, 1 );
+		m_sharedLayout.RefreshCommonElements(0, 1);
 		FetchMarketData();
 	}
 

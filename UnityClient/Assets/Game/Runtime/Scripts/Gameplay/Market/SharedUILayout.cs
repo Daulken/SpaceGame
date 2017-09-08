@@ -18,9 +18,6 @@ public class SharedUILayout : MonoBehaviour
 	public delegate void	PageChangedAction();
 	public static event		PageChangedAction OnPageChanged;
 
-	public delegate void PlayerDataReturnedAction();
-	public static event PlayerDataReturnedAction OnPlayerDataReturned;
-
 	// Use this for initialization
 	void Start ()
 	{

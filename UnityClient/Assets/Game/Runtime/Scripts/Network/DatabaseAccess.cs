@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 public static class DatabaseAccess
 {
+	public delegate void PlayerUpdatedDelegate(SpaceLibrary.Player player);
+	public static event PlayerUpdatedDelegate OnPlayerUpdated;
+
 	// The most up to date cache of the player for the current login
 	private static SpaceLibrary.Player ms_player = null;
 
@@ -56,6 +59,10 @@ public static class DatabaseAccess
 									{
 										ms_player = player;
 										result(true, "");
+
+										// Inform listeners that the player has changed
+										if (OnPlayerUpdated != null)
+											OnPlayerUpdated(player);
 									}
 								}
 								else
@@ -105,6 +112,10 @@ public static class DatabaseAccess
 						{
 							ms_player = player;
 							result(true, "", player);
+
+							// Inform listeners that the player has changed
+							if (OnPlayerUpdated != null)
+								OnPlayerUpdated(player);
 						}
 					}
 					else
